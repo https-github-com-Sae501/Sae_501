@@ -10,10 +10,11 @@
   },
   "dependencies": {
     "@react-three/fiber": "^8.14.6",
-    "next": "13.5.5",
+    "next": "^13.5.5",
     "react": "^18",
     "react-dom": "^18",
-    "three": "^0.157.0"
+    "three": "^0.157.0",
+    "three-orbitcontrols": "^2.110.3"
   },
   "devDependencies": {
     "@types/node": "^20",

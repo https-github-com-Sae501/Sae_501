@@ -1,29 +1,139 @@
 "use client";
 import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+
 const Sculpt: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-      camera.position.z = 5;
-      const renderer = new THREE.WebGLRenderer();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      containerRef.current?.appendChild(renderer.domElement);
-      const geometry = new THREE.BoxGeometry();
-      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-      const cube = new THREE.Mesh(geometry, material);
-      scene.add(cube);
-      const animate = () => {
-        requestAnimationFrame(animate);
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
-        renderer.render(scene, camera);
-      };
-      animate();
+      function main() {
+        const canvas = document.querySelector('#c');
+        const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+        const cellSize = 8;
+        const fov = 75;
+        const aspect = window.innerWidth / window.innerHeight;
+        const near = 0.1;
+        const far = 1000;
+        const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+        camera.position.set(-cellSize * 0.3, cellSize * 0.8, -cellSize * 0.3);
+
+        const controls = new OrbitControls(camera, canvas);
+        controls.target.set(cellSize / 2, cellSize / 3, cellSize / 2);
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color('lightblue');
+
+        function addLight(x, y, z) {
+          const color = 0xFFFFFF;
+          const intensity = 3;
+          const light = new THREE.DirectionalLight(color, intensity);
+          light.position.set(x, y, z);
+          scene.add(light);
+        }
+
+        addLight(-1, 2, 4);
+        addLight(1, -1, -2);
+
+        const cell = new Uint8Array(cellSize * cellSize * cellSize);
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshPhongMaterial({ color: 'gray' });
+        const cubes = [];
+
+        for (let y = 0; y < cellSize; ++y) {
+          for (let z = 0; z < cellSize; ++z) {
+            for (let x = 0; x < cellSize; ++x) {
+              const offset = y * cellSize * cellSize + z * cellSize + x;
+              cell[offset] = 1;
+            }
+          }
+        }
+
+        for (let y = 0; y < cellSize; ++y) {
+          for (let z = 0; z < cellSize; ++z) {
+            for (let x = 0; x < cellSize; ++x) {
+              const offset = y * cellSize * cellSize + z * cellSize + x;
+              const block = cell[offset];
+              if (block) {
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(x, y, z);
+                scene.add(mesh);
+                cubes.push(mesh);
+              }
+            }
+          }
+        }
+
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        canvas.addEventListener('click', onMouseClick);
+
+        function onMouseClick(event) {
+          event.preventDefault();
+
+          const canvasBounds = renderer.domElement.getBoundingClientRect();
+          const mouseX = (event.clientX - canvasBounds.left) / canvasBounds.width * 2 - 1;
+          const mouseY = -(event.clientY - canvasBounds.top) / canvasBounds.height * 2 + 1;
+
+          mouse.x = mouseX;
+          mouse.y = mouseY;
+
+          raycaster.setFromCamera(mouse, camera);
+
+          const intersects = raycaster.intersectObjects(cubes);
+
+          if (intersects.length > 0) {
+            const selectedCube = intersects[0].object;
+            scene.remove(selectedCube);
+            cubes.splice(cubes.indexOf(selectedCube), 1);
+            requestRenderIfNotRequested();
+          }
+        }
+
+        function resizeRendererToDisplaySize(renderer) {
+          const canvas = renderer.domElement;
+          const width = canvas.clientWidth;
+          const height = canvas.clientHeight;
+          const needResize = canvas.width !== width || canvas.height !== height;
+          if (needResize) {
+            renderer.setSize(width, height, false);
+          }
+          return needResize;
+        }
+
+        let renderRequested = false;
+
+        function render() {
+          renderRequested = undefined;
+          if (resizeRendererToDisplaySize(renderer)) {
+            const canvas = renderer.domElement;
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+          }
+          controls.update();
+          renderer.render(scene, camera);
+        }
+
+        render();
+
+        function requestRenderIfNotRequested() {
+          if (!renderRequested) {
+            renderRequested = true;
+            requestAnimationFrame(render);
+          }
+        }
+
+        controls.addEventListener('change', requestRenderIfNotRequested);
+        window.addEventListener('resize', requestRenderIfNotRequested);
+      }
+
+      main();
     }
   }, []);
-  return <div ref={containerRef} />;
+
+  return <canvas id="c" style={{ width: '100%', height: '100%' }}></canvas>;
 };
+
 export default Sculpt;
