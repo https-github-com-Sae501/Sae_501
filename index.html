@@ -14,10 +14,27 @@
         height: 100%;
         display: block;
       }
+ 
+      #undoButton {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        padding: 10px 20px; 
+        background-color: black; 
+        color: #fff; 
+        border: none; 
+        border-radius: 5px; 
+        cursor: pointer; 
+      }
+      #undoButton:hover {
+        background-color: #fff; 
+        color: black;
+      }
     </style>
   </head>
   <body>
     <canvas id="c"></canvas>
+    <button id="undoButton">LOOKING BACK</button> 
     <script  type="importmap">{
         "imports": {
             "three": "https://threejs.org/build/three.module.js",
@@ -29,67 +46,57 @@
     import * as THREE from 'https://threejs.org/build/three.module.js';
     import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
 
+    let scene, camera, renderer, controls, raycaster, mouse, cubes, deletedCubes;
+
     function main() {
       const canvas = document.querySelector('#c');
-      const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+      renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
       const cellSize = 8;
       const fov = 75;
       const aspect = window.innerWidth / window.innerHeight;
       const near = 0.1;
       const far = 1000;
-      const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+      camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
       camera.position.set(-cellSize * 0.3, cellSize * 0.8, -cellSize * 0.3);
-      const controls = new OrbitControls(camera, canvas);
+      controls = new OrbitControls(camera, canvas);
       controls.target.set(cellSize / 2, cellSize / 3, cellSize / 2);
       controls.update();
-      const scene = new THREE.Scene();
+      scene = new THREE.Scene();
       scene.background = new THREE.Color('lightblue');
+      deletedCubes = [];
+      cubes = createCubes(cellSize);
 
-      function addLight( x, y, z ) {
-        const color = 0xFFFFFF;
-        const intensity = 3;
-        const light = new THREE.DirectionalLight( color, intensity );
-        light.position.set( x, y, z );
-        scene.add( light );
-      } 
+      // Ajout des lumières directionnelles
+      addLight(-1, 2, 4);
+      addLight(1, -1, -2);
 
-      addLight( - 1, 2, 4 );
-      addLight( 1, - 1, - 2 );
+      raycaster = new THREE.Raycaster();
+      mouse = new THREE.Vector2();
 
-      const cell = new Uint8Array(cellSize * cellSize * cellSize);
-      const geometry = new THREE.BoxGeometry(1, 1, 1);
-      const material = new THREE.MeshPhongMaterial({ color: 'gray' });
-      const cubes = [];
+      canvas.addEventListener('click', onMouseClick);
+      document.querySelector('#undoButton').addEventListener('click', restoreDeletedCube); // Ajout de l'événement pour le bouton "Retour en arrière"
 
+      function createCubes(cellSize) {
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshPhongMaterial({ color: 0x888888 }); // Couleur grise
+        const cubeArray = [];
 
-      for (let y = 0; y < cellSize; ++y) {
-        for (let z = 0; z < cellSize; ++z) {
-          for (let x = 0; x < cellSize; ++x) {
-            const offset = y * cellSize * cellSize + z * cellSize + x;
-            cell[offset] = 1; 
-          }
-        }
-      }
-
-      for (let y = 0; y < cellSize; ++y) {
-        for (let z = 0; z < cellSize; ++z) {
-          for (let x = 0; x < cellSize; ++x) {
-            const offset = y * cellSize * cellSize + z * cellSize + x;
-            const block = cell[offset];
-            if (block) {
-              const mesh = new THREE.Mesh(geometry, material);
-              mesh.position.set(x, y, z);
-              scene.add(mesh);
-              cubes.push(mesh); 
+        for (let y = 0; y < cellSize; ++y) {
+          for (let z = 0; z < cellSize; ++z) {
+            for (let x = 0; x < cellSize; ++x) {
+              const offset = y * cellSize * cellSize + z * cellSize + x;
+              const block = 1; // Pour créer un cube
+              if (block) {
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(x, y, z);
+                scene.add(mesh);
+                cubeArray.push(mesh);
+              }
             }
           }
         }
+        return cubeArray;
       }
-
-      const raycaster = new THREE.Raycaster();
-      const mouse = new THREE.Vector2();
-
-      canvas.addEventListener('click', onMouseClick);
 
       function onMouseClick(event) {
         event.preventDefault();
@@ -102,9 +109,19 @@
 
         if (intersects.length > 0) {
           const selectedCube = intersects[0].object;
-          scene.remove(selectedCube); 
-          cubes.splice(cubes.indexOf(selectedCube), 1); 
-          requestRenderIfNotRequested(); 
+          scene.remove(selectedCube);
+          cubes.splice(cubes.indexOf(selectedCube), 1);
+          deletedCubes.push(selectedCube); // Ajoutez le cube supprimé au tableau
+          requestRenderIfNotRequested();
+        }
+      }
+
+      function restoreDeletedCube() {
+        if (deletedCubes.length > 0) {
+          const cubeToRestore = deletedCubes.pop();
+          scene.add(cubeToRestore);
+          cubes.push(cubeToRestore);
+          requestRenderIfNotRequested();
         }
       }
 
@@ -143,6 +160,14 @@
 
       controls.addEventListener('change', requestRenderIfNotRequested);
       window.addEventListener('resize', requestRenderIfNotRequested);
+    }
+
+    function addLight(x, y, z) {
+      const color = 0xFFFFFF;
+      const intensity = 3;
+      const light = new THREE.DirectionalLight(color, intensity);
+      light.position.set(x, y, z);
+      scene.add(light);
     }
 
     main();
