@@ -22,6 +22,8 @@ const Sculpt: React.FC = () => {
         const controls = new OrbitControls(camera, canvas);
         controls.target.set(cellSize / 2, cellSize / 3, cellSize / 2);
 
+
+        
         const scene = new THREE.Scene();
         scene.background = new THREE.Color('lightblue');
 
