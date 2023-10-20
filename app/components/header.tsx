@@ -1,9 +1,19 @@
+import Link from "next/link";
+
 const Header = () => {
   return (
     <header className="flex justify-between items-center p-2 px-3 bg-black text-white w-full">
         <div className=" flex flex-row gap-4">
-            <p className="text-sm">Sculpt</p>
-            <p className="text-sm">Library</p>
+            <div className="text-sm">
+                <Link href="/">
+                    Sculpt
+                </Link> 
+            </div>
+            <div className="text-sm">
+                <Link href="/library">
+                    Library
+                </Link> 
+            </div>
         </div>
         <div className="text-sm">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">

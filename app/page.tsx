@@ -1,8 +1,8 @@
 import Image from 'next/image'
-import Header from './header'
-import Sculpt from './sculpt'
-import Footer from './footer'
-import Botton from './botton'
+import Header from './components/header'
+import Sculpt from './components/sculpt'
+import Footer from './components/footer'
+import Botton from './components/botton'
 
 export default function Home() {
   return (
