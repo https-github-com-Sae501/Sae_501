@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Header from './components/header'
 import Sculpt from './components/sculpt'
 import Footer from './components/footer'
