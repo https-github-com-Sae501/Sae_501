@@ -11,7 +11,7 @@ const Header = () => {
                     </Link> 
                 </div>
                 <div className="text-sm">
-                    <Link href="/library">
+                    <Link href="./library">
                         Library
                     </Link> 
                 </div>
