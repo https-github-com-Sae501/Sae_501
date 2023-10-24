@@ -17,11 +17,13 @@ const Sculpt: React.FC = () => {
         const near = 0.1;
         const far = 1000;
         const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-        camera.position.set(-cellSize * 0.3, cellSize * 0.8, -cellSize * 0.3);
+        camera.position.set(-cellSize * 0.8, cellSize * 1.3, -cellSize * 0.8);
 
         const controls = new OrbitControls(camera, canvas);
         controls.target.set(cellSize / 2, cellSize / 3, cellSize / 2);
 
+
+        
         const scene = new THREE.Scene();
         scene.background = new THREE.Color('lightblue');
 
@@ -133,7 +135,7 @@ const Sculpt: React.FC = () => {
     }
   }, []);
 
-  return <canvas id="c" style={{ width: '100%', height: '100%' }}></canvas>;
+  return <canvas className='overflow-y-hidden' id="c" style={{ width: '100%', height: '100%' }}></canvas>;
 };
 
 export default Sculpt;
