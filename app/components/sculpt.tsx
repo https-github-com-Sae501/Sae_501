@@ -21,9 +21,11 @@ const Sculpt: React.FC = () => {
 
         const controls = new OrbitControls(camera, canvas);
         controls.target.set(cellSize / 2, cellSize / 3, cellSize / 2);
+        controls.mouseButtons = {
+          MIDDLE: THREE.MOUSE.DOLLY,
+          RIGHT: THREE.MOUSE.ROTATE, // Activer la rotation avec le bouton droit
+        };
 
-
-        
         const scene = new THREE.Scene();
         scene.background = new THREE.Color('lightblue');
 
@@ -72,25 +74,24 @@ const Sculpt: React.FC = () => {
         const mouse = new THREE.Vector2();
 
         canvas.addEventListener('click', onMouseClick);
-        document.querySelector('#undoButton').addEventListener('click', restoreDeletedCube); // Ajout de l'événement pour le bouton "Retour en arrière"
-
+        document.querySelector('#undoButton').addEventListener('click', restoreDeletedCube);
 
         function onMouseClick(event) {
           event.preventDefault();
 
-        mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
-        mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
-        raycaster.setFromCamera(mouse, camera);
+          mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+          mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+          raycaster.setFromCamera(mouse, camera);
 
-        const intersects = raycaster.intersectObjects(cubes);
+          const intersects = raycaster.intersectObjects(cubes);
 
-        if (intersects.length > 0) {
-          const selectedCube = intersects[0].object;
-          scene.remove(selectedCube);
-          cubes.splice(cubes.indexOf(selectedCube), 1);
-          deletedCubes.push(selectedCube); // Ajoutez le cube supprimé au tableau
-          requestRenderIfNotRequested();
-        }
+          if (intersects.length > 0) {
+            const selectedCube = intersects[0].object;
+            scene.remove(selectedCube);
+            cubes.splice(cubes.indexOf(selectedCube), 1);
+            deletedCubes.push(selectedCube);
+            requestRenderIfNotRequested();
+          }
         }
 
         function restoreDeletedCube() {
@@ -145,11 +146,10 @@ const Sculpt: React.FC = () => {
 
   return (
     <div style={{ width: '100%', height: '100vh', overflow: 'hidden' }}>
-      <button id="undoButton" style={{position:'absolute', top:'60px', left:'10px', padding:'10px 20px', backgroundColor:'black',color:'#fff', border:'none', borderRadius:'5px', cursor:'pointer'}}>LOOKING BACK</button>
+      <button id="undoButton" style={{ position: 'absolute', top: '60px', left: '10px', padding: '10px 20px', backgroundColor: 'black', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>LOOKING BACK</button>
       <canvas className="overflow-y-hidden" id="c" style={{ width: '100%', height: '100%' }}></canvas>
     </div>
   );
-  
 };
 
 export default Sculpt;
