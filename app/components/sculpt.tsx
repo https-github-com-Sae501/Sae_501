@@ -3,6 +3,7 @@ import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
+
 const Sculpt: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -71,6 +72,23 @@ const Sculpt: React.FC = () => {
         const mouse = new THREE.Vector2();
 
         canvas.addEventListener('click', onMouseClick);
+        const historiqueCubes = [];
+
+        function loadHistoriqueCubesFromLocalStorage() {
+            const jsonString = localStorage.getItem('historiqueCubes');
+            if (jsonString) {
+                const historiqueCubes = JSON.parse(jsonString);
+                historiqueCubes.forEach(cubeInfo => {
+                    cubes.forEach((cube, index) => {
+                        if (cube.position.equals(cubeInfo.position)) {
+                        scene.remove(cube);
+                        cubes.splice(index, 1);
+                        }
+                     });
+                });
+            }
+        }
+        loadHistoriqueCubesFromLocalStorage();
 
         function onMouseClick(event) {
           event.preventDefault();
@@ -87,13 +105,25 @@ const Sculpt: React.FC = () => {
           const intersects = raycaster.intersectObjects(cubes);
 
           if (intersects.length > 0) {
-            const selectedCube = intersects[0].object;
+            const selectedCube = intersects[0].object;  
+
+            const cubeInfo = {
+                position: selectedCube.position.clone(),
+              };
+            
+            historiqueCubes.push(cubeInfo);
+            console.log(historiqueCubes);
+
+            const jsonString = JSON.stringify(historiqueCubes);
+            localStorage.setItem('historiqueCubes', jsonString);
+
             scene.remove(selectedCube);
             cubes.splice(cubes.indexOf(selectedCube), 1);
+
             requestRenderIfNotRequested();
           }
         }
-
+ 
         function resizeRendererToDisplaySize(renderer) {
           const canvas = renderer.domElement;
           const width = canvas.clientWidth;
@@ -108,14 +138,14 @@ const Sculpt: React.FC = () => {
         let renderRequested = false;
 
         function render() {
-          renderRequested = undefined;
-          if (resizeRendererToDisplaySize(renderer)) {
-            const canvas = renderer.domElement;
-            camera.aspect = canvas.clientWidth / canvas.clientHeight;
-            camera.updateProjectionMatrix();
-          }
-          controls.update();
-          renderer.render(scene, camera);
+            renderRequested = undefined;
+            if (resizeRendererToDisplaySize(renderer)) {
+                const canvas = renderer.domElement;
+                camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                camera.updateProjectionMatrix();
+            }
+            controls.update();
+            renderer.render(scene, camera);
         }
 
         render();
@@ -139,3 +169,4 @@ const Sculpt: React.FC = () => {
 };
 
 export default Sculpt;
+

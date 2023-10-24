@@ -37,12 +37,12 @@ const Popup: React.FC = () => {
             </div>
             
             <div className="mt-4 space-x-2 flex justify-end">
-              <button onClick={handleSave} className="bg-black text-white px-3 py-1 rounded cursor-pointer">
+              <a href="/library" onClick={handleSave} className="bg-black text-white px-3 py-1 rounded cursor-pointer">
                 Save
-              </button>
-              <button onClick={closePopup} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-pointer">
+              </a>
+              <a onClick={closePopup} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-pointer">
                 Cancelled
-              </button>
+              </a>
             </div>
           </div>
         </div>
