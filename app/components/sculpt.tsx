@@ -159,89 +159,106 @@ const Sculpt: React.FC = () => {
   }, [cellSize, canvasEvents]);
 
   return (
-    <div style={{ width: '100%', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ width: '100%', height: '100vh', overflow: 'hidden', position: 'relative' }}>
       <div>
-        {showOptions && (
-          <div style={{ color: 'black' }}>
-            Choisissez la taille du cube :
+        <div>
+          <div style={{ position: 'absolute', top: '35%', left: '32%', zIndex: 2 }}>
+            {showOptions && (
+              <div
+                onClick={() => handleOptionClick(4)}
+                style={{
+                  cursor: 'pointer',
+                  marginBottom: '15px',
+                  backgroundColor: cellSize === 4 ? 'lightblue' : 'white',
+                  padding: '30px',
+                  border: '1px solid black',
+                  borderRadius: '10px',
+                  width: '700px',
+                  fontSize: '30px',
+                  textAlign: 'center',
+                }}
+              >
+                Petit (4)
+              </div>
+            )}
+            {showOptions && (
+              <div
+                onClick={() => handleOptionClick(8)}
+                style={{
+                  cursor: 'pointer',
+                  marginBottom: '15px',
+                  backgroundColor: cellSize === 8 ? 'lightblue' : 'white',
+                  padding: '30px',
+                  border: '1px solid black',
+                  borderRadius: '10px',
+                  fontSize: '30px',
+                  textAlign: 'center',
+                }}
+              >
+                Moyen (8)
+              </div>
+            )}
+            {showOptions && (
+              <div
+                onClick={() => handleOptionClick(16)}
+                style={{
+                  cursor: 'pointer',
+                  backgroundColor: cellSize === 16 ? 'lightblue' : 'white',
+                  padding: '30px',
+                  border: '1px solid black',
+                  borderRadius: '10px',
+                  fontSize: '30px',
+                  textAlign: 'center',
+                }}
+              >
+                Grand (16)
+              </div>
+            )}
           </div>
-        )}
-        <div style={{ position: 'absolute', top: '35%', left: '32%' }}>
-          {showOptions && (
-            <div
-              onClick={() => handleOptionClick(4)}
-              style={{
-                cursor: 'pointer',
-                marginBottom: '15px',
-                backgroundColor: cellSize === 4 ? 'lightblue' : 'white',
-                padding: '30px',
-                border: '1px solid black',
-                borderRadius: '10px',
-                width: '700px',
-                fontSize: '30px',
-                textAlign: 'center'
-              }}
-            >
-              Petit (4)
-            </div>
-          )}
-          {showOptions && (
-            <div
-              onClick={() => handleOptionClick(8)}
-              style={{
-                cursor: 'pointer',
-                marginBottom: '15px',
-                backgroundColor: cellSize === 8 ? 'lightblue' : 'white',
-                padding: '30px',
-                border: '1px solid black',
-                borderRadius: '10px',
-                fontSize: '30px',
-                textAlign: 'center'
-              }}
-            >
-              Moyen (8)
-            </div>
-          )}
-          {showOptions && (
-            <div
-              onClick={() => handleOptionClick(16)}
-              style={{
-                cursor: 'pointer',
-                backgroundColor: cellSize === 16 ? 'lightblue' : 'white',
-                padding: '30px',
-                border: '1px solid black',
-                borderRadius: '10px',
-                fontSize: '30px',
-                textAlign: 'center'
-              }}
-            >
-              Grand (16)
-            </div>
-          )}
+          <button id="undoButton"
+            style={{
+              position: 'absolute',
+              top: '60px',
+              left: '10px',
+              padding: '10px 20px',
+              backgroundColor: 'black',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              userSelect: 'none',
+              zIndex: 2,
+              filter: isOptionsOpen ? 'blur(5px)' : 'none',
+            }}
+          >
+            LOOKING BACK
+          </button>
         </div>
-        <button id="undoButton"
+      </div>
+      {isOptionsOpen && (
+        <div
           style={{
             position: 'absolute',
-            top: '60px',
-            left: '10px',
-            padding: '10px 20px',
-            backgroundColor: 'black',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            userSelect: 'none'
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backdropFilter: 'blur(5px)',
+            zIndex: 1,
           }}
-        >
-          LOOKING BACK
-        </button>
-        <canvas
-          className="overflow-y-hidden"
-          id="c"
-          style={{ width: '100%', height: '100%' }}
-        ></canvas>
-      </div>
+        />
+      )}
+      <canvas
+        id="c"
+        style={{
+          width: '100%',
+          height: '100%',
+          filter: isOptionsOpen ? 'blur(5px)' : 'none',
+          zIndex: 0,
+        }}
+      ></canvas>
     </div>
   );
+  
 }
 export default Sculpt;
