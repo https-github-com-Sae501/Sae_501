@@ -20,7 +20,7 @@ const Popup: React.FC = () => {
 
   return (
     <div>
-      <button onClick={openPopup} className="fixed bottom-[3rem] right-4 bg-black text-white px-[2rem] py-2 rounded-md cursor-pointer">
+      <button onClick={openPopup} className="fixed bottom-[3rem] right-4 bg-black text-white px-[2rem] py-2 rounded-md cursor-pointer select-none">
         Save
       </button>
 

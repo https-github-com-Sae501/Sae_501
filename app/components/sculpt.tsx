@@ -7,10 +7,15 @@ const Sculpt: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState(9);
   const [showOptions, setShowOptions] = useState(true);
+  const [isOptionsOpen, setIsOptionsOpen] = useState(true);
+  const [canvasEvents, setCanvasEvents] = useState('none');
 
   const handleOptionClick = (size: number) => {
     setCellSize(size);
-    setShowOptions(false); // Cacher les options après le clic
+    setShowOptions(false);
+    setIsOptionsOpen(false);
+    setCanvasEvents('auto');
+
   };
 
   useEffect(() => {
@@ -18,7 +23,6 @@ const Sculpt: React.FC = () => {
       function main() {
         const canvas = document.querySelector('#c');
         const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
-        // const cellSize = 8;
         const fov = 75;
         const aspect = window.innerWidth / window.innerHeight;
         const near = 0.1;
@@ -30,9 +34,12 @@ const Sculpt: React.FC = () => {
         controls.target.set(cellSize / 2, cellSize / 3, cellSize / 2);
         controls.mouseButtons = {
           MIDDLE: THREE.MOUSE.DOLLY,
-          RIGHT: THREE.MOUSE.ROTATE, // Activer la rotation avec le bouton droit
+          RIGHT: THREE.MOUSE.ROTATE,
         };
 
+        canvas.style.pointerEvents = canvasEvents;
+
+  
         const scene = new THREE.Scene();
         scene.background = new THREE.Color('lightblue');
 
@@ -43,6 +50,7 @@ const Sculpt: React.FC = () => {
           light.position.set(x, y, z);
           scene.add(light);
         }
+        
 
         addLight(-1, 2, 4);
         addLight(1, -1, -2);
@@ -148,7 +156,7 @@ const Sculpt: React.FC = () => {
 
       main();
     }
-  }, [cellSize]);
+  }, [cellSize, canvasEvents]);
 
   return (
     <div style={{ width: '100%', height: '100vh', overflow: 'hidden' }}>
@@ -174,7 +182,7 @@ const Sculpt: React.FC = () => {
                 textAlign: 'center'
               }}
             >
-              Petit
+              Petit (4)
             </div>
           )}
           {showOptions && (
@@ -191,7 +199,7 @@ const Sculpt: React.FC = () => {
                 textAlign: 'center'
               }}
             >
-              Moyen
+              Moyen (8)
             </div>
           )}
           {showOptions && (
@@ -207,7 +215,7 @@ const Sculpt: React.FC = () => {
                 textAlign: 'center'
               }}
             >
-              Grand
+              Grand (16)
             </div>
           )}
         </div>
@@ -221,7 +229,8 @@ const Sculpt: React.FC = () => {
             color: '#fff',
             border: 'none',
             borderRadius: '5px',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            userSelect: 'none'
           }}
         >
           LOOKING BACK
