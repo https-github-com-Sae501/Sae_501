@@ -7,12 +7,12 @@ const Header = () => {
             <div className=" flex flex-row gap-4">
                 <div className="text-sm">
                     <Link href="/">
-                        Sculpt
+                        Library
                     </Link> 
                 </div>
                 <div className="text-sm">
-                    <Link href="./library">
-                        Library
+                    <Link href="./sculpt">
+                        Sculpt
                     </Link> 
                 </div>
             </div>

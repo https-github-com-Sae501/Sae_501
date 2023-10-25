@@ -2,10 +2,14 @@
 import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { useSearchParams } from 'next/navigation'
 
 
 const Sculpt: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const searchParams = useSearchParams()
+    const name = searchParams.get('name')
+    console.log(name)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -75,7 +79,7 @@ const Sculpt: React.FC = () => {
         const historiqueCubes = [];
 
         function loadHistoriqueCubesFromLocalStorage() {
-            const jsonString = localStorage.getItem('historiqueCubes');
+            const jsonString = localStorage.getItem(name);
             if (jsonString) {
                 const historiqueCubes = JSON.parse(jsonString);
                 historiqueCubes.forEach(cubeInfo => {
