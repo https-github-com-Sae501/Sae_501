@@ -1,20 +1,25 @@
 "use client";
 
 import React from 'react';
+import { useRouter } from 'next/navigation'
 
 const BottonRefresh: React.FC = () => {
-  const handleClick = () => {
-    // Réinitialise la scène en recréant les cubes
-    const jsonString = localStorage.getItem('historiqueCubes');
-    const historiqueCubes = JSON.parse(jsonString) || [];
-    
-    
+    const router = useRouter()
+    const handleClick = () => {
+        router.push(`/sculpt?name=historiqueCubes`);
 
-    // Efface les données du localStorage
-    localStorage.removeItem('historiqueCubes');
-    
-    window.location.reload();
-  };
+        // Réinitialise la scène en recréant les cubes
+        const jsonString = localStorage.getItem('historiqueCubes');
+        const historiqueCubes = JSON.parse(jsonString) || [];
+        
+        // Efface les données du localStorage
+        localStorage.removeItem('historiqueCubes');
+        
+        setTimeout(() => {
+            window.location.reload();
+        }, 100);
+        
+    };
 
   return (
     <button onClick={handleClick} className="fixed top-[3.5rem] left-4 bg-black text-white px-3  py-2 rounded-md cursor-pointer">
