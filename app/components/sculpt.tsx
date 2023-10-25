@@ -10,6 +10,9 @@ const Sculpt: React.FC = () => {
   const [isOptionsOpen, setIsOptionsOpen] = useState(true);
   const [canvasEvents, setCanvasEvents] = useState('none');
 
+  const cubes = [];
+  const deletedCubes = [];
+
   const handleOptionClick = (size: number) => {
     setCellSize(size);
     setShowOptions(false);
@@ -158,6 +161,17 @@ const Sculpt: React.FC = () => {
     }
   }, [cellSize, canvasEvents]);
 
+  const breakFiveBlocks = (count: number) => {
+    if (cubes.length > 0) {
+      for (let i = 0; i < count; i++) {
+        const cubeToBreak = cubes.pop();
+        scene.remove(cubeToBreak);
+        deletedCubes.push(cubeToBreak);
+      }
+      requestRenderIfNotRequested();
+    }
+  };
+
   return (
     <div style={{ width: '100%', height: '100vh', overflow: 'hidden', position: 'relative' }}>
       <div>
@@ -233,6 +247,9 @@ const Sculpt: React.FC = () => {
           >
             LOOKING BACK
           </button>
+
+          <button style={{position:'absolute', zIndex:'10',  top:'60%'}} onClick={() => breakFiveBlocks(5)}>Casser 5 blocs</button>
+
         </div>
       </div>
       {isOptionsOpen && (
