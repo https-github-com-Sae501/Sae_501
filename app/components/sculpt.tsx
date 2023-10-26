@@ -26,7 +26,10 @@ const Sculpt: React.FC = () => {
 
         const controls = new OrbitControls(camera, canvas);
         controls.target.set(cellSize / 2, cellSize / 3, cellSize / 2);
-
+        controls.mouseButtons = {
+            MIDDLE: THREE.MOUSE.DOLLY,
+            RIGHT: THREE.MOUSE.ROTATE, // Activer la rotation avec le bouton droit
+        };
 
         
         const scene = new THREE.Scene();
@@ -97,17 +100,12 @@ const Sculpt: React.FC = () => {
         function onMouseClick(event) {
           event.preventDefault();
 
-          const canvasBounds = renderer.domElement.getBoundingClientRect();
-          const mouseX = (event.clientX - canvasBounds.left) / canvasBounds.width * 2 - 1;
-          const mouseY = -(event.clientY - canvasBounds.top) / canvasBounds.height * 2 + 1;
-
-          mouse.x = mouseX;
-          mouse.y = mouseY;
-
+          mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+          mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
           raycaster.setFromCamera(mouse, camera);
 
           const intersects = raycaster.intersectObjects(cubes);
-
+          
           if (intersects.length > 0) {
             const selectedCube = intersects[0].object;  
 
