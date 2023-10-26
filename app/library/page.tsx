@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../components/header';
 import Footer from '../components/footer';
+import BottonCreate from '../components/bottonCreate';
 import Link from 'next/link';
 
 const LibraryPage = () => {
@@ -34,6 +35,7 @@ const LibraryPage = () => {
           </li>
         ))}
       </ul>
+      <Link href='./sculpt'><BottonCreate></BottonCreate></Link>
       <Footer />
     </div>
   );

@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { useSearchParams } from 'next/navigation'
@@ -7,16 +7,25 @@ import { useSearchParams } from 'next/navigation'
 
 const Sculpt: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const [cellSize, setCellSize] = useState(9);
+    const [showOptions, setShowOptions] = useState(true);
+    const [isOptionsOpen, setIsOptionsOpen] = useState(true);
+    const [canvasEvents, setCanvasEvents] = useState('none');
+
+    const handleOptionClick = (size: number) => {
+        setCellSize(size);
+        setShowOptions(false);
+        setIsOptionsOpen(false);
+        setCanvasEvents('auto');
+    };
     const searchParams = useSearchParams()
     const name = searchParams.get('name')
-    console.log(name)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       function main() {
         const canvas = document.querySelector('#c');
         const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
-        const cellSize = 8;
         const fov = 75;
         const aspect = window.innerWidth / window.innerHeight;
         const near = 0.1;
@@ -30,8 +39,8 @@ const Sculpt: React.FC = () => {
             MIDDLE: THREE.MOUSE.DOLLY,
             RIGHT: THREE.MOUSE.ROTATE, // Activer la rotation avec le bouton droit
         };
+        canvas.style.pointerEvents = canvasEvents;
 
-        
         const scene = new THREE.Scene();
         scene.background = new THREE.Color('lightblue');
 
@@ -50,6 +59,7 @@ const Sculpt: React.FC = () => {
         const geometry = new THREE.BoxGeometry(1, 1, 1);
         const material = new THREE.MeshPhongMaterial({ color: 'gray' });
         const cubes = [];
+        const deletedCubes = [];
 
         for (let y = 0; y < cellSize; ++y) {
           for (let z = 0; z < cellSize; ++z) {
@@ -79,6 +89,7 @@ const Sculpt: React.FC = () => {
         const mouse = new THREE.Vector2();
 
         canvas.addEventListener('click', onMouseClick);
+        document.querySelector('#undoButton').addEventListener('click', restoreDeletedCube);
         const historiqueCubes = [];
 
         function loadHistoriqueCubesFromLocalStorage() {
@@ -121,11 +132,18 @@ const Sculpt: React.FC = () => {
 
             scene.remove(selectedCube);
             cubes.splice(cubes.indexOf(selectedCube), 1);
-
+            deletedCubes.push(selectedCube);
             requestRenderIfNotRequested();
           }
         }
- 
+        function restoreDeletedCube() {
+            if (deletedCubes.length > 0) {
+              const cubeToRestore = deletedCubes.pop();
+              scene.add(cubeToRestore);
+              cubes.push(cubeToRestore);
+              requestRenderIfNotRequested();
+            }
+        }
         function resizeRendererToDisplaySize(renderer) {
           const canvas = renderer.domElement;
           const width = canvas.clientWidth;
@@ -165,9 +183,82 @@ const Sculpt: React.FC = () => {
 
       main();
     }
-  }, []);
+  }, [cellSize, canvasEvents]);
 
-  return <canvas className='overflow-y-hidden' id="c" style={{ width: '100%', height: '100%' }}></canvas>;
+  return (
+    <div style={{ width: '100%', height: '100vh', overflow: 'hidden'}}>
+        <div>
+            {showOptions && (
+            <div style={{ color: 'black' }}>
+                Choisissez la taille du cube :
+            </div>
+            )}
+            <div style={{ position: 'absolute', top: '35%', left: '32%' }}>
+            {showOptions && (
+                <div
+                onClick={() => handleOptionClick(4)}
+                style={{
+                    cursor: 'pointer',
+                    marginBottom: '15px',
+                    backgroundColor: cellSize === 4 ? 'lightblue' : 'white',
+                    padding: '30px',
+                    border: '1px solid black',
+                    borderRadius: '10px',
+                    width: '700px',
+                    fontSize: '30px',
+                    textAlign: 'center'
+                }}
+                >
+                Petit
+                </div>
+            )}
+            {showOptions && (
+                <div
+                onClick={() => handleOptionClick(8)}
+                style={{
+                    cursor: 'pointer',
+                    marginBottom: '15px',
+                    backgroundColor: cellSize === 8 ? 'lightblue' : 'white',
+                    padding: '30px',
+                    border: '1px solid black',
+                    borderRadius: '10px',
+                    fontSize: '30px',
+                    textAlign: 'center'
+                }}
+                >
+                Moyen
+                </div>
+            )}
+            {showOptions && (
+                <div
+                onClick={() => handleOptionClick(16)}
+                style={{
+                    cursor: 'pointer',
+                    backgroundColor: cellSize === 16 ? 'lightblue' : 'white',
+                    padding: '30px',
+                    border: '1px solid black',
+                    borderRadius: '10px',
+                    fontSize: '30px',
+                    textAlign: 'center'
+                }}
+                >
+                Grand
+                </div>
+            )}
+            </div>
+            <button id="undoButton"
+            className="absolute top-[3.5rem] left-[4.5rem] px-3 py-2 bg-black text-white rounded-md cursor-pointer select-none"
+            >
+            LOOKING BACK
+            </button>
+            <canvas
+            className="overflow-y-hidden"
+            id="c"
+            style={{ width: '100%', height: '100%' }}
+            ></canvas>
+        </div>
+      </div>
+  );
 };
 
 export default Sculpt;
