@@ -186,78 +186,38 @@ const Sculpt: React.FC = () => {
   }, [cellSize, canvasEvents]);
 
   return (
-    <div style={{ width: '100%', height: '100vh', overflow: 'hidden'}}>
-        <div>
-            {showOptions && (
-            <div style={{ color: 'black' }}>
+    <div className="w-full h-full overflow-hidden relative">
+        {showOptions && (
+            <div className="text-black backdrop-blur-md absolute inset-0 flex items-center justify-center">
+            <div className="p-4 w-96 text-2xl text-center font-semibold">
                 Choisissez la taille du cube :
-            </div>
-            )}
-            <div style={{ position: 'absolute', top: '35%', left: '32%' }}>
-            {showOptions && (
                 <div
                 onClick={() => handleOptionClick(4)}
-                style={{
-                    cursor: 'pointer',
-                    marginBottom: '15px',
-                    backgroundColor: cellSize === 4 ? 'lightblue' : 'white',
-                    padding: '30px',
-                    border: '1px solid black',
-                    borderRadius: '10px',
-                    width: '700px',
-                    fontSize: '30px',
-                    textAlign: 'center'
-                }}
+                className={`cursor-pointer mt-4 ${cellSize === 4 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
                 >
                 Petit
                 </div>
-            )}
-            {showOptions && (
                 <div
                 onClick={() => handleOptionClick(8)}
-                style={{
-                    cursor: 'pointer',
-                    marginBottom: '15px',
-                    backgroundColor: cellSize === 8 ? 'lightblue' : 'white',
-                    padding: '30px',
-                    border: '1px solid black',
-                    borderRadius: '10px',
-                    fontSize: '30px',
-                    textAlign: 'center'
-                }}
+                className={`cursor-pointer mt-4 ${cellSize === 8 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
                 >
                 Moyen
                 </div>
-            )}
-            {showOptions && (
                 <div
                 onClick={() => handleOptionClick(16)}
-                style={{
-                    cursor: 'pointer',
-                    backgroundColor: cellSize === 16 ? 'lightblue' : 'white',
-                    padding: '30px',
-                    border: '1px solid black',
-                    borderRadius: '10px',
-                    fontSize: '30px',
-                    textAlign: 'center'
-                }}
+                className={`cursor-pointer mt-4 ${cellSize === 16 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
                 >
                 Grand
                 </div>
-            )}
             </div>
-            <button id="undoButton"
-            className="absolute top-[3.5rem] left-[4.5rem] px-3 py-2 bg-black text-white rounded-md cursor-pointer select-none"
-            >
+            </div>
+        )}
+        <button id="undoButton" className="absolute top-[3.5rem] left-[4.5rem] px-3 py-2 bg-black text-white rounded-md cursor-pointer select-none">
             LOOKING BACK
-            </button>
-            <canvas
-            className="overflow-y-hidden"
-            id="c"
-            style={{ width: '100%', height: '100%' }}
-            ></canvas>
+        </button>
+        <canvas className="overflow-hidden" id="c" style={{ width: '100%', height: '100%' }}></canvas>
         </div>
-      </div>
+
   );
 };
 
