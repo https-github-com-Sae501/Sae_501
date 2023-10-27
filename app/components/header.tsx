@@ -2,17 +2,17 @@ import Link from "next/link";
 
 const Header = () => {
   return (
-    <header className="fixed top-0 w-full z-10  ">
+    <header className="fixed top-0 w-full z-50">
         <div className="flex justify-between items-center p-2 px-3 bg-black text-white w-full">    
             <div className=" flex flex-row gap-4">
                 <div className="text-sm">
                     <Link href="/">
-                        Sculpt
+                        Library
                     </Link> 
                 </div>
                 <div className="text-sm">
-                    <Link href="./library">
-                        Library
+                    <Link href="./sculpt">
+                        Sculpt
                     </Link> 
                 </div>
             </div>
