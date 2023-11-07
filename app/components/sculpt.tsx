@@ -186,7 +186,7 @@ const Sculpt: React.FC = () => {
   }, [cellSize, canvasEvents]);
 
   return (
-    <div className="w-full h-full overflow-hidden relative">
+     <div className="w-full h-full overflow-hidden relative ">
         {showOptions && (
             <div className="text-black backdrop-blur-md absolute inset-0 flex items-center justify-center">
             <div className="p-4 w-96 text-2xl text-center font-semibold">
