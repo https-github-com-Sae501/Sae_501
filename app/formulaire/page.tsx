@@ -1,65 +1,181 @@
 "use client";
-
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import Axios from 'axios';
 import Header from '../components/header';
 import Footer from '../components/footer';
+import '../styles/formulaire.css'
 
 const Formulaire: React.FC = () => {
-  const [formData, setFormData] = useState<{ username: string; password: string }>({ username: '', password: '' });
-  const [responseMessage, setResponseMessage] = useState<string | null>(null);
+  const [registrationData, setRegistrationData] = useState({
+    firstname: '',
+    lastname: '',
+    email: '',
+    address: '',
+    zipcode: '',
+    city: '',
+    password: ''
+  });
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const [loginData, setLoginData] = useState({
+    loginEmail: '',
+    loginPassword: ''
+  });
+
+  const [registrationResponse, setRegistrationResponse] = useState<string | null>(null);
+  const [loginResponse, setLoginResponse] = useState<string | null>(null);
+
+  const handleRegistrationSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const response = await Axios.post('http://127.0.0.1:8000/api/users', formData);
+      const response = await Axios.post('http://127.0.0.1:8000/api/users', registrationData);
 
-      setResponseMessage('Inscription réussie ! Vous pouvez maintenant vous connecter.');
+      setRegistrationResponse('Inscription réussie ! Vous pouvez maintenant vous connecter.');
 
-      setFormData({ username: '', password: '' });
+      // Réinitialiser le formulaire d'inscription
+      setRegistrationData({
+        firstname: '',
+        lastname: '',
+        email: '',
+        address: '',
+        zipcode: '',
+        city: '',
+        password: ''
+      });
     } catch (error) {
-      console.log(error)
-      setResponseMessage('Une erreur s\'est produite lors de l\'inscription. Veuillez réessayer.');
+      console.error(error);
+      setRegistrationResponse('Une erreur s\'est produite lors de l\'inscription. Veuillez réessayer.');
+    }
+  };
+
+  const handleLoginSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      // Ajoutez ici la logique pour gérer la connexion
+    } catch (error) {
+      console.error(error);
+      setLoginResponse('Une erreur s\'est produite lors de la connexion. Veuillez réessayer.');
     }
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setRegistrationData({ ...registrationData, [name]: value });
   };
 
-  
+  const handleLoginInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setLoginData({ ...loginData, [name]: value });
+  };
 
   return (
     <div>
-    <Header />
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-        {responseMessage && <p>{responseMessage}</p>}
-        <form onSubmit={handleSubmit}>
-          <label>
-            Nom d'utilisateur:
+      <Header />
+      <div className="centered-container">
+        <form onSubmit={handleLoginSubmit} className="form-container">
+          <h2>Connexion</h2>
+          <div className="form-group">
+            <label>Email de connexion:</label>
+            <input
+              type="email"
+              name="loginEmail"
+              value={loginData.loginEmail}
+              onChange={handleLoginInputChange}
+              className="input-field"
+            />
+          </div>
+          <div className="form-group">
+            <label>Mot de passe:</label>
+            <input
+              type="password"
+              name="loginPassword"
+              value={loginData.loginPassword}
+              onChange={handleLoginInputChange}
+              className="input-field"
+            />
+          </div>
+          <button type="submit" className="submit-button">Se connecter</button>
+          {loginResponse && <p>{loginResponse}</p>}
+        </form>
+        <form onSubmit={handleRegistrationSubmit} className="form-container">
+          <h2>Inscription</h2>
+          <div className="form-group">
+            <label>Prénom:</label>
             <input
               type="text"
-              name="username"
-              value={formData.username}
+              name="firstname"
+              value={registrationData.firstname}
               onChange={handleInputChange}
+              className="input-field"
             />
-          </label>
-          <label>
-            Mot de passe:
+          </div>
+          <div className="form-group">
+            <label>Nom de famille:</label>
+            <input
+              type="text"
+              name="lastname"
+              value={registrationData.lastname}
+              onChange={handleInputChange}
+              className="input-field"
+            />
+          </div>
+          <div className="form-group">
+            <label>Email:</label>
+            <input
+              type="email"
+              name="email"
+              value={registrationData.email}
+              onChange={handleInputChange}
+              className="input-field"
+            />
+          </div>
+          <div className="form-group">
+            <label>Adresse:</label>
+            <input
+              type="text"
+              name="address"
+              value={registrationData.address}
+              onChange={handleInputChange}
+              className="input-field"
+            />
+          </div>
+          <div className="form-group">
+            <label>Code postal:</label>
+            <input
+              type="text"
+              name="zipcode"
+              value={registrationData.zipcode}
+              onChange={handleInputChange}
+              className="input-field"
+            />
+          </div>
+          <div className="form-group">
+            <label>Ville:</label>
+            <input
+              type="text"
+              name="city"
+              value={registrationData.city}
+              onChange={handleInputChange}
+              className="input-field"
+            />
+          </div>
+          <div className="form-group">
+            <label>Mot de passe:</label>
             <input
               type="password"
               name="password"
-              value={formData.password}
+              value={registrationData.password}
               onChange={handleInputChange}
+              className="input-field"
             />
-          </label>
-          <button type="submit">S'inscrire</button>
+          </div>
+          <button type="submit" className="submit-button">S'inscrire</button>
+          {registrationResponse && <p>{registrationResponse}</p>}
         </form>
+      </div>
+      <Footer />
     </div>
-    <Footer />
-  </div>
   );
 };
 
