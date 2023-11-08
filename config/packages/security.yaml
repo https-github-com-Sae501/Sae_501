@@ -14,9 +14,6 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
-            pattern: ^/
-            anonymous: ~
-            http_basic: ~
             lazy: true
             provider: app_user_provider
             custom_authenticator: App\Security\UsersAuthenticator
