@@ -10,7 +10,7 @@ const Formulaire: React.FC = () => {
     firstname: '',
     lastname: '',
     email: '',
-    address: '',
+    adress: '',
     zipcode: '',
     city: '',
     password: ''
@@ -37,7 +37,7 @@ const Formulaire: React.FC = () => {
         firstname: '',
         lastname: '',
         email: '',
-        address: '',
+        adress: '',
         zipcode: '',
         city: '',
         password: ''
@@ -134,8 +134,8 @@ const Formulaire: React.FC = () => {
             <label>Adresse:</label>
             <input
               type="text"
-              name="address"
-              value={registrationData.address}
+              name="adress"
+              value={registrationData.adress}
               onChange={handleInputChange}
               className="input-field"
             />
@@ -171,8 +171,7 @@ const Formulaire: React.FC = () => {
             />
           </div>
           <button type="submit" className="submit-button">S'inscrire</button>
-          {registrationResponse && <p>{registrationResponse}</p>}
-        </form>
+          {registrationResponse && <p className="success-message">{registrationResponse}</p>}        </form>
       </div>
       <Footer />
     </div>

@@ -213,7 +213,7 @@ const Sculpt: React.FC = () => {
             </div>
         )}
         <button id="undoButton" className="absolute top-[3.5rem] left-[4.5rem] px-3 py-2 bg-black text-white rounded-md cursor-pointer select-none">
-            LOOKING BACK
+            UNDO
         </button>
         <canvas className="overflow-hidden" id="c" style={{ width: '100%', height: '100%' }}></canvas>
         </div>
