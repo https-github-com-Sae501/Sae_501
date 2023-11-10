@@ -2,7 +2,12 @@
 
 namespace App\Entity;
 
+
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Resource\Factory\ResourceMetadataCollectionFactoryInterface;
 use App\Entity\Trait\CreatedAtTrait;
 use App\Repository\UsersRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -13,7 +18,24 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
-#[ApiResource]
+
+#[ApiResource(
+    operations: [
+        new Get,
+        new Post,
+        new Post(
+            name: 'register',
+            uriTemplate: '/register',
+            controller: \App\Controller\RegistrationController::class
+        ),
+        new Post(
+            name: 'login',
+            uriTemplate: '/login',
+            controller: \App\Controller\SecurityController::class
+        )
+    ]
+)]
+
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class Users implements UserInterface, PasswordAuthenticatedUserInterface
 {
