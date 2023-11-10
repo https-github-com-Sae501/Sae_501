@@ -4,6 +4,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { useSearchParams } from 'next/navigation'
 
+interface CubeInfo {
+    cellSize: number;
+  }
 
 const Sculpt: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -11,15 +14,40 @@ const Sculpt: React.FC = () => {
     const [showOptions, setShowOptions] = useState(true);
     const [isOptionsOpen, setIsOptionsOpen] = useState(true);
     const [canvasEvents, setCanvasEvents] = useState('none');
+    const [historiqueCubes, setHistoriqueCubes] = useState<CubeInfo[]>([]);
 
     const handleOptionClick = (size: number) => {
         setCellSize(size);
         setShowOptions(false);
         setIsOptionsOpen(false);
         setCanvasEvents('auto');
+
+        const cubeInfo = {
+            cellSize: size,
+          };
+        
+          setHistoriqueCubes([...historiqueCubes, cubeInfo]);
+          console.log(cubeInfo)
+          console.log(historiqueCubes)
     };
     const searchParams = useSearchParams()
     const name = searchParams.get('name')
+
+    const handleLookingBack = () => {
+        const jsonString = localStorage.getItem('historiqueCubes');
+        if (jsonString) {
+          const historiqueCubesData = JSON.parse(jsonString);
+      
+          if (historiqueCubesData.length > 0) {
+            historiqueCubesData.pop();
+      
+            const updatedJsonString = JSON.stringify(historiqueCubesData);
+            localStorage.setItem('historiqueCubes', updatedJsonString);
+      
+            setHistoriqueCubes(historiqueCubesData);
+          }
+        }
+      };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -212,8 +240,12 @@ const Sculpt: React.FC = () => {
             </div>
             </div>
         )}
-        <button id="undoButton" className="absolute top-[3.5rem] left-[4.5rem] px-3 py-2 bg-black text-white rounded-md cursor-pointer select-none">
-            LOOKING BACK
+        <button 
+            id="undoButton" 
+            className="absolute top-[3.5rem] left-[4.5rem] px-3 py-2 bg-black text-white rounded-md cursor-pointer select-none"
+            onClick={handleLookingBack}
+            >
+            UNDO
         </button>
         <canvas className="overflow-hidden" id="c" style={{ width: '100%', height: '100%' }}></canvas>
         </div>
