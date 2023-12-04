@@ -1,11 +1,19 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import queryString from 'query-string';
 
 const Popup: React.FC = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
-  const [localStorageName, setLocalStorageName] = useState(''); 
-  
+  const [localStorageName, setLocalStorageName] = useState('');
+
+  useEffect(() => {
+    const { name: sculptureNameFromUrl } = queryString.parse(window.location.search);
+    if (sculptureNameFromUrl) {
+      setLocalStorageName(sculptureNameFromUrl as string);
+    }
+  }, []);
+
   const openPopup = () => {
     setPopupOpen(true);
   };
