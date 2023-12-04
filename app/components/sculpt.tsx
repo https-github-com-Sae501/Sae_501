@@ -5,49 +5,49 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { useSearchParams } from 'next/navigation'
 
 interface CubeInfo {
-    cellSize: number;
-  }
+  cellSize: number;
+}
 
 const Sculpt: React.FC = () => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const [cellSize, setCellSize] = useState(9);
-    const [showOptions, setShowOptions] = useState(true);
-    const [isOptionsOpen, setIsOptionsOpen] = useState(true);
-    const [canvasEvents, setCanvasEvents] = useState('none');
-    const [historiqueCubes, setHistoriqueCubes] = useState<CubeInfo[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [cellSize, setCellSize] = useState(9);
+  const [showOptions, setShowOptions] = useState(true);
+  const [isOptionsOpen, setIsOptionsOpen] = useState(true);
+  const [canvasEvents, setCanvasEvents] = useState('none');
+  const [historiqueCubes, setHistoriqueCubes] = useState<CubeInfo[]>([]);
 
-    const handleOptionClick = (size: number) => {
-        setCellSize(size);
-        setShowOptions(false);
-        setIsOptionsOpen(false);
-        setCanvasEvents('auto');
+  const handleOptionClick = (size: number) => {
+    setCellSize(size);
+    setShowOptions(false);
+    setIsOptionsOpen(false);
+    setCanvasEvents('auto');
 
-        const cubeInfo = {
-            cellSize: size,
-          };
-        
-          setHistoriqueCubes([...historiqueCubes, cubeInfo]);
-          console.log(cubeInfo)
-          console.log(historiqueCubes)
+    const cubeInfo = {
+      cellSize: size,
     };
-    const searchParams = useSearchParams()
-    const name = searchParams.get('name')
 
-    const handleLookingBack = () => {
-        const jsonString = localStorage.getItem('historiqueCubes');
-        if (jsonString) {
-          const historiqueCubesData = JSON.parse(jsonString);
-      
-          if (historiqueCubesData.length > 0) {
-            historiqueCubesData.pop();
-      
-            const updatedJsonString = JSON.stringify(historiqueCubesData);
-            localStorage.setItem('historiqueCubes', updatedJsonString);
-      
-            setHistoriqueCubes(historiqueCubesData);
-          }
-        }
-      };
+    setHistoriqueCubes([...historiqueCubes, cubeInfo]);
+    console.log(cubeInfo)
+    console.log(historiqueCubes)
+  };
+  const searchParams = useSearchParams()
+  const name = searchParams.get('name')
+
+  const handleLookingBack = () => {
+    const jsonString = localStorage.getItem('historiqueCubes');
+    if (jsonString) {
+      const historiqueCubesData = JSON.parse(jsonString);
+
+      if (historiqueCubesData.length > 0) {
+        historiqueCubesData.pop();
+
+        const updatedJsonString = JSON.stringify(historiqueCubesData);
+        localStorage.setItem('historiqueCubes', updatedJsonString);
+
+        setHistoriqueCubes(historiqueCubesData);
+      }
+    }
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -64,8 +64,8 @@ const Sculpt: React.FC = () => {
         const controls = new OrbitControls(camera, canvas);
         controls.target.set(cellSize / 2, cellSize / 3, cellSize / 2);
         controls.mouseButtons = {
-            MIDDLE: THREE.MOUSE.DOLLY,
-            RIGHT: THREE.MOUSE.ROTATE, // Activer la rotation avec le bouton droit
+          MIDDLE: THREE.MOUSE.DOLLY,
+          RIGHT: THREE.MOUSE.ROTATE, // Activer la rotation avec le bouton droit
         };
 
         if (!showOptions) {
@@ -125,30 +125,32 @@ const Sculpt: React.FC = () => {
         document.querySelector('#undoButton').addEventListener('click', restoreDeletedCube);
         const historiqueCubes = [];
 
-        function loadHistoriqueCubesFromLocalStorage() {
-            const jsonString = localStorage.getItem(name);
-            console.log(jsonString)
-            console.log(showOptions)
+        //------------- Ouvrir Sculpture --------------------------
 
-            if (jsonString) {
-                const historiqueCubes = JSON.parse(jsonString);
-                const tailles = historiqueCubes.length > 0 ? historiqueCubes[0].taille : null;
-                console.log(tailles)
-                setCellSize(tailles)
-                console.log(cellSize)
-                setShowOptions(false)
-                console.log(showOptions)
-                historiqueCubes.forEach(cubeInfo => {
-                    cubes.forEach((cube, index) => {
-                        if (cube.position.equals(cubeInfo.position)) {
-                        scene.remove(cube);
-                        cubes.splice(index, 1);
-                        }
-                     });
-                });
-            }
+        function loadHistoriqueCubesFromLocalStorage() {
+          const jsonString = localStorage.getItem(name);
+          console.log(jsonString)
+          console.log(showOptions)
+
+          if (jsonString) {
+            const historiqueCubes = JSON.parse(jsonString);
+            const tailles = historiqueCubes.length > 0 ? historiqueCubes[0].taille : null;
+            setCellSize(tailles)
+            setShowOptions(false)
+
+            historiqueCubes.forEach(cubeInfo => {
+              cubes.forEach((cube, index) => {
+                if (cube.position.equals(cubeInfo.position)) {
+                  scene.remove(cube);
+                  cubes.splice(index, 1);
+                }
+              });
+            });
+          }
         }
         loadHistoriqueCubesFromLocalStorage();
+
+        //------------- Fonction au click --------------------------
 
         function onMouseClick(event) {
           event.preventDefault();
@@ -158,17 +160,16 @@ const Sculpt: React.FC = () => {
           raycaster.setFromCamera(mouse, camera);
 
           const intersects = raycaster.intersectObjects(cubes);
-          
+
           if (intersects.length > 0) {
-            const selectedCube = intersects[0].object;  
+            const selectedCube = intersects[0].object;
 
             const cubeInfo = {
-                position: selectedCube.position.clone(),
-                taille: cellSize,
-              };
-            
+              position: selectedCube.position.clone(),
+              taille: cellSize,
+            };
+
             historiqueCubes.push(cubeInfo);
-            console.log(historiqueCubes);
 
             const jsonString = JSON.stringify(historiqueCubes);
             localStorage.setItem('historiqueCubes', jsonString);
@@ -179,13 +180,14 @@ const Sculpt: React.FC = () => {
             requestRenderIfNotRequested();
           }
         }
+        //------------- Restorer un Cube --------------------------
         function restoreDeletedCube() {
-            if (deletedCubes.length > 0) {
-              const cubeToRestore = deletedCubes.pop();
-              scene.add(cubeToRestore);
-              cubes.push(cubeToRestore);
-              requestRenderIfNotRequested();
-            }
+          if (deletedCubes.length > 0) {
+            const cubeToRestore = deletedCubes.pop();
+            scene.add(cubeToRestore);
+            cubes.push(cubeToRestore);
+            requestRenderIfNotRequested();
+          }
         }
         function resizeRendererToDisplaySize(renderer) {
           const canvas = renderer.domElement;
@@ -201,14 +203,14 @@ const Sculpt: React.FC = () => {
         let renderRequested = false;
 
         function render() {
-            renderRequested = undefined;
-            if (resizeRendererToDisplaySize(renderer)) {
-                const canvas = renderer.domElement;
-                camera.aspect = canvas.clientWidth / canvas.clientHeight;
-                camera.updateProjectionMatrix();
-            }
-            controls.update();
-            renderer.render(scene, camera);
+          renderRequested = undefined;
+          if (resizeRendererToDisplaySize(renderer)) {
+            const canvas = renderer.domElement;
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+          }
+          controls.update();
+          renderer.render(scene, camera);
         }
 
         render();
@@ -226,44 +228,44 @@ const Sculpt: React.FC = () => {
 
       main();
     }
-  }, [showOptions,cellSize, canvasEvents]);
+  }, [showOptions, cellSize, canvasEvents]);
 
   return (
     <div className="w-full h-full overflow-hidden relative ">
-    {showOptions && (
+      {showOptions && (
         <div className="text-black backdrop-blur-md absolute inset-0 flex items-center justify-center">
-            <div className="p-4 w-96 text-2xl text-center font-semibold">
-                Choisissez la taille du cube :
-                <div
-                    onClick={() => handleOptionClick(4)}
-                    className={`cursor-pointer mt-4 ${cellSize === 4 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
-                >
-                    Petit
-                </div>
-                <div
-                    onClick={() => handleOptionClick(8)}
-                    className={`cursor-pointer mt-4 ${cellSize === 8 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
-                >
-                    Moyen
-                </div>
-                <div
-                    onClick={() => handleOptionClick(16)}
-                    className={`cursor-pointer mt-4 ${cellSize === 16 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
-                >
-                    Grand
-                </div>
+          <div className="p-4 w-96 text-2xl text-center font-semibold">
+            Choisissez la taille du cube :
+            <div
+              onClick={() => handleOptionClick(4)}
+              className={`cursor-pointer mt-4 ${cellSize === 4 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
+            >
+              Petit
             </div>
+            <div
+              onClick={() => handleOptionClick(8)}
+              className={`cursor-pointer mt-4 ${cellSize === 8 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
+            >
+              Moyen
+            </div>
+            <div
+              onClick={() => handleOptionClick(16)}
+              className={`cursor-pointer mt-4 ${cellSize === 16 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
+            >
+              Grand
+            </div>
+          </div>
         </div>
-    )}
-    <button 
-        id="undoButton" 
+      )}
+      <button
+        id="undoButton"
         className="absolute top-[3.5rem] left-[4.5rem] px-3 py-2 bg-black text-white rounded-md cursor-pointer select-none"
         onClick={handleLookingBack}
-    >
+      >
         UNDO
-    </button>
-    <canvas className="overflow-hidden" id="c" style={{ width: '100%', height: '100%' }}></canvas>
-</div>
+      </button>
+      <canvas className="overflow-hidden" id="c" style={{ width: '100%', height: '100%' }}></canvas>
+    </div>
 
 
   );

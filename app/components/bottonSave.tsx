@@ -23,11 +23,20 @@ const Popup: React.FC = () => {
       alert('Veuillez entrer un nom valide.');
       return;
     }
-    const jsonString = localStorage.getItem('historiqueCubes');
-    localStorage.setItem(localStorageName, jsonString); 
-
+  
+    const jsonString = localStorage.getItem(localStorageName);
+    const existingData = jsonString ? JSON.parse(jsonString) : [];
+    const historiqueCubes = JSON.parse(localStorage.getItem('historiqueCubes') || '[]');
+  
+    // Fusionner les données existantes avec l'historiqueCubes actuel
+    const mergedData = [...existingData, ...historiqueCubes];
+  
+    localStorage.setItem(localStorageName, JSON.stringify(mergedData));
+    localStorage.setItem('historiqueCubes', '');
+  
     closePopup();
   };
+  
 
   return (
     <div>
