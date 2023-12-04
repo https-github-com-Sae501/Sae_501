@@ -67,6 +67,11 @@ const Sculpt: React.FC = () => {
             MIDDLE: THREE.MOUSE.DOLLY,
             RIGHT: THREE.MOUSE.ROTATE, // Activer la rotation avec le bouton droit
         };
+
+        if (!showOptions) {
+          handleOptionClick(cellSize);
+        }
+
         canvas.style.pointerEvents = canvasEvents;
 
         const scene = new THREE.Scene();
@@ -122,8 +127,17 @@ const Sculpt: React.FC = () => {
 
         function loadHistoriqueCubesFromLocalStorage() {
             const jsonString = localStorage.getItem(name);
+            console.log(jsonString)
+            console.log(showOptions)
+
             if (jsonString) {
                 const historiqueCubes = JSON.parse(jsonString);
+                const tailles = historiqueCubes.length > 0 ? historiqueCubes[0].taille : null;
+                console.log(tailles)
+                setCellSize(tailles)
+                console.log(cellSize)
+                setShowOptions(false)
+                console.log(showOptions)
                 historiqueCubes.forEach(cubeInfo => {
                     cubes.forEach((cube, index) => {
                         if (cube.position.equals(cubeInfo.position)) {
@@ -150,6 +164,7 @@ const Sculpt: React.FC = () => {
 
             const cubeInfo = {
                 position: selectedCube.position.clone(),
+                taille: cellSize,
               };
             
             historiqueCubes.push(cubeInfo);
@@ -211,44 +226,45 @@ const Sculpt: React.FC = () => {
 
       main();
     }
-  }, [cellSize, canvasEvents]);
+  }, [showOptions,cellSize, canvasEvents]);
 
   return (
-     <div className="w-full h-full overflow-hidden relative ">
-        {showOptions && (
-            <div className="text-black backdrop-blur-md absolute inset-0 flex items-center justify-center">
+    <div className="w-full h-full overflow-hidden relative ">
+    {showOptions && (
+        <div className="text-black backdrop-blur-md absolute inset-0 flex items-center justify-center">
             <div className="p-4 w-96 text-2xl text-center font-semibold">
                 Choisissez la taille du cube :
                 <div
-                onClick={() => handleOptionClick(4)}
-                className={`cursor-pointer mt-4 ${cellSize === 4 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
+                    onClick={() => handleOptionClick(4)}
+                    className={`cursor-pointer mt-4 ${cellSize === 4 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
                 >
-                Petit
+                    Petit
                 </div>
                 <div
-                onClick={() => handleOptionClick(8)}
-                className={`cursor-pointer mt-4 ${cellSize === 8 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
+                    onClick={() => handleOptionClick(8)}
+                    className={`cursor-pointer mt-4 ${cellSize === 8 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
                 >
-                Moyen
+                    Moyen
                 </div>
                 <div
-                onClick={() => handleOptionClick(16)}
-                className={`cursor-pointer mt-4 ${cellSize === 16 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
+                    onClick={() => handleOptionClick(16)}
+                    className={`cursor-pointer mt-4 ${cellSize === 16 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
                 >
-                Grand
+                    Grand
                 </div>
             </div>
-            </div>
-        )}
-        <button 
-            id="undoButton" 
-            className="absolute top-[3.5rem] left-[4.5rem] px-3 py-2 bg-black text-white rounded-md cursor-pointer select-none"
-            onClick={handleLookingBack}
-            >
-            UNDO
-        </button>
-        <canvas className="overflow-hidden" id="c" style={{ width: '100%', height: '100%' }}></canvas>
         </div>
+    )}
+    <button 
+        id="undoButton" 
+        className="absolute top-[3.5rem] left-[4.5rem] px-3 py-2 bg-black text-white rounded-md cursor-pointer select-none"
+        onClick={handleLookingBack}
+    >
+        UNDO
+    </button>
+    <canvas className="overflow-hidden" id="c" style={{ width: '100%', height: '100%' }}></canvas>
+</div>
+
 
   );
 };
