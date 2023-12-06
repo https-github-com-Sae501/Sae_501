@@ -153,11 +153,13 @@ const Sculpt: React.FC<AnotherChildProps>  = ({ infoFromChild }) => {0
 
         //------------- Fonction au click --------------------------
         
+        const nombreDeBlocsCassables = infoFromChild; // Vous pouvez changer cette valeur selon vos besoins
+        console.log("nomber de bloc"+ infoFromChild)
 
         function onMouseClick(event) {
-          const nombreDeBlocsCassables = infoFromChild; // Vous pouvez changer cette valeur selon vos besoins
-          console.log(nombreDeBlocsCassables)
-          event.preventDefault();
+        //   const nombreDeBlocsCassables = 1; // Vous pouvez changer cette valeur selon vos besoins
+        console.log(nombreDeBlocsCassables)
+        event.preventDefault();
         
           mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
           mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
