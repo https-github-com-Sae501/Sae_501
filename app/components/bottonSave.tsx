@@ -22,7 +22,7 @@ const Popup: React.FC = () => {
     setPopupOpen(false);
   };
 
-  const handleNameChange = (event) => {
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLocalStorageName(event.target.value);
   };
 
@@ -36,7 +36,6 @@ const Popup: React.FC = () => {
     const existingData = jsonString ? JSON.parse(jsonString) : [];
     const historiqueCubes = JSON.parse(localStorage.getItem('historiqueCubes') || '[]');
   
-    // Fusionner les données existantes avec l'historiqueCubes actuel
     const mergedData = [...existingData, ...historiqueCubes];
   
     localStorage.setItem(localStorageName, JSON.stringify(mergedData));

@@ -7,8 +7,11 @@ import { useSearchParams } from 'next/navigation'
 interface CubeInfo {
   cellSize: number;
 }
+interface AnotherChildProps {
+  infoFromChild: string;
+}
 
-const Sculpt: React.FC = () => {
+const Sculpt: React.FC<AnotherChildProps>  = ({ infoFromChild }) => {0
   const containerRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState(9);
   const [showOptions, setShowOptions] = useState(true);
@@ -129,8 +132,6 @@ const Sculpt: React.FC = () => {
 
         function loadHistoriqueCubesFromLocalStorage() {
           const jsonString = localStorage.getItem(name);
-          console.log(jsonString)
-          console.log(showOptions)
 
           if (jsonString) {
             const historiqueCubes = JSON.parse(jsonString);
@@ -151,35 +152,52 @@ const Sculpt: React.FC = () => {
         loadHistoriqueCubesFromLocalStorage();
 
         //------------- Fonction au click --------------------------
+        
 
         function onMouseClick(event) {
+          const nombreDeBlocsCassables = infoFromChild; // Vous pouvez changer cette valeur selon vos besoins
+          console.log(nombreDeBlocsCassables)
           event.preventDefault();
-
+        
           mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
           mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
           raycaster.setFromCamera(mouse, camera);
-
+        
           const intersects = raycaster.intersectObjects(cubes);
-
+        
           if (intersects.length > 0) {
             const selectedCube = intersects[0].object;
-
-            const cubeInfo = {
-              position: selectedCube.position.clone(),
-              taille: cellSize,
-            };
-
-            historiqueCubes.push(cubeInfo);
-
-            const jsonString = JSON.stringify(historiqueCubes);
-            localStorage.setItem('historiqueCubes', jsonString);
-
-            scene.remove(selectedCube);
-            cubes.splice(cubes.indexOf(selectedCube), 1);
-            deletedCubes.push(selectedCube);
-            requestRenderIfNotRequested();
+        
+            const selectedIndex = cubes.indexOf(selectedCube);
+        
+            if (selectedIndex !== -1) {
+              // Retirer le nombre de blocs cassables spécifié
+              for (let i = 0; i < nombreDeBlocsCassables; i++) {
+                const cubeIndexToRemove = selectedIndex + i;
+                if (cubeIndexToRemove < cubes.length) {
+                  const cubeToRemove = cubes[cubeIndexToRemove];
+                  scene.remove(cubeToRemove);
+                  cubes.splice(cubeIndexToRemove, 1);
+                  deletedCubes.push(cubeToRemove);
+                }
+              }
+        
+              // Mettre à jour l'historique
+              const cubeInfo = {
+                position: selectedCube.position.clone(),
+                taille: cellSize,
+              };
+              historiqueCubes.push(cubeInfo);
+        
+              const jsonString = JSON.stringify(historiqueCubes);
+              localStorage.setItem('historiqueCubes', jsonString);
+        
+              requestRenderIfNotRequested();
+            }
           }
         }
+        
+        
         //------------- Restorer un Cube --------------------------
         function restoreDeletedCube() {
           if (deletedCubes.length > 0) {
