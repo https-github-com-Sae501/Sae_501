@@ -17,8 +17,9 @@ const PageSculpt: React.FC = () => {
     };
   
     useEffect(() => {
+      
       console.log(infoFromChild);
-    }, [infoFromChild]); // Utilisez useEffect pour surveiller les changements dans infoFromChild
+    }, [infoFromChild]);
   
     return (
       <main className="flex min-h-screen flex-col items-center justify-between">

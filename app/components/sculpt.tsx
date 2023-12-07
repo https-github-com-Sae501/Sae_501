@@ -7,11 +7,11 @@ import { useSearchParams } from 'next/navigation'
 interface CubeInfo {
   cellSize: number;
 }
-interface AnotherChildProps {
+interface SculptProps  {
   infoFromChild: string;
 }
 
-const Sculpt: React.FC<AnotherChildProps>  = ({ infoFromChild }) => {0
+const Sculpt: React.FC<SculptProps>  = ({ infoFromChild }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState(9);
   const [showOptions, setShowOptions] = useState(true);
@@ -153,13 +153,12 @@ const Sculpt: React.FC<AnotherChildProps>  = ({ infoFromChild }) => {0
 
         //------------- Fonction au click --------------------------
         
-        const nombreDeBlocsCassables = infoFromChild; // Vous pouvez changer cette valeur selon vos besoins
-        console.log("nomber de bloc"+ infoFromChild)
+        const nombreDeBlocsCassables = 1; // Vous pouvez changer cette valeur selon vos besoins
 
         function onMouseClick(event) {
-        //   const nombreDeBlocsCassables = 1; // Vous pouvez changer cette valeur selon vos besoins
         console.log(nombreDeBlocsCassables)
         event.preventDefault();
+        console.log("nombre de bloc"+ infoFromChild)
         
           mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
           mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
@@ -282,7 +281,7 @@ const Sculpt: React.FC<AnotherChildProps>  = ({ infoFromChild }) => {0
         className="absolute top-[3.5rem] left-[4.5rem] px-3 py-2 bg-black text-white rounded-md cursor-pointer select-none"
         onClick={handleLookingBack}
       >
-        UNDO
+        UNDO 
       </button>
       <canvas className="overflow-hidden" id="c" style={{ width: '100%', height: '100%' }}></canvas>
     </div>
