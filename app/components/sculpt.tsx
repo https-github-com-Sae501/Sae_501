@@ -153,7 +153,7 @@ const Sculpt: React.FC<SculptProps>  = ({ infoFromChild }) => {
 
         //------------- Fonction au click --------------------------
         
-        const nombreDeBlocsCassables = 1; // Vous pouvez changer cette valeur selon vos besoins
+        const nombreDeBlocsCassables = 2; // Vous pouvez changer cette valeur selon vos besoins
 
         function onMouseClick(event) {
         console.log(nombreDeBlocsCassables)
@@ -174,27 +174,28 @@ const Sculpt: React.FC<SculptProps>  = ({ infoFromChild }) => {
             if (selectedIndex !== -1) {
               // Retirer le nombre de blocs cassables spécifié
               for (let i = 0; i < nombreDeBlocsCassables; i++) {
-                const cubeIndexToRemove = selectedIndex + i;
-                if (cubeIndexToRemove < cubes.length) {
-                  const cubeToRemove = cubes[cubeIndexToRemove];
-                  scene.remove(cubeToRemove);
-                  cubes.splice(cubeIndexToRemove, 1);
-                  deletedCubes.push(cubeToRemove);
-                }
+                  const cubeIndexToRemove = selectedIndex;
+                  if (cubeIndexToRemove < cubes.length) {
+                      const cubeToRemove = cubes[cubeIndexToRemove];
+                      scene.remove(cubeToRemove);
+                      cubes.splice(cubeIndexToRemove, 1);
+                      deletedCubes.push(cubeToRemove);
+                  }
               }
-        
+          
               // Mettre à jour l'historique
               const cubeInfo = {
-                position: selectedCube.position.clone(),
-                taille: cellSize,
+                  position: selectedCube.position.clone(),
+                  taille: cellSize,
               };
               historiqueCubes.push(cubeInfo);
-        
+          
               const jsonString = JSON.stringify(historiqueCubes);
               localStorage.setItem('historiqueCubes', jsonString);
-        
+          
               requestRenderIfNotRequested();
-            }
+          }
+          
           }
         }
         
