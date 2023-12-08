@@ -3,7 +3,6 @@ import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import Axios from 'axios';
 import Header from '../components/header';
 import Footer from '../components/footer';
-import '../styles/formulaire.css';
 
 const Formulaire: React.FC = () => {
   const [registrationData, setRegistrationData] = useState({
@@ -90,74 +89,78 @@ const Formulaire: React.FC = () => {
   return (
     <div>
       <Header />
-      <div className="centered-container">
-        <form onSubmit={handleLoginSubmit} className="form-container">
-          <h2>Connexion</h2>
-          <div className="form-group">
-            <label>Email de connexion:</label>
+      <div className="flex justify-center items-center min-h-screen bg-gray-100 gap-10 ">
+        <form onSubmit={handleLoginSubmit} className=" overflow-y-auto p-8 w-1/2 max-w-xl ">
+          <h1 className="text-3xl mb-4 flex flex-row gap-2 text-black" >ALREADY <p className='font-bold text-black'>REGISTERED</p> ?</h1>
+          <h2 className="text-xl mb-4 text-black">Connect now !</h2>
+          <div className="mb-6">
+            <label className="block font-bold text-black">Mail:</label>
             <input
               type="email"
-              name="email" 
+              name="email"
               value={loginData.email}
               onChange={handleLoginInputChange}
-              className="input-field"
+              className="w-full p-3 border border-gray-300 rounded text-black"
             />
           </div>
-          <div className="form-group">
-            <label>Mot de passe:</label>
+          <div className="mb-6">
+            <label className="block font-bold text-black">Password:</label>
             <input
               type="password"
-              name="password" 
+              name="password"
               value={loginData.password}
               onChange={handleLoginInputChange}
-              className="input-field"
+              className="w-full p-3 border border-gray-300 rounded text-black"
             />
           </div>
-          <button type="submit" className="submit-button">
-            Se connecter
+          <button type="submit" className="w-full bg-black text-white p-3 rounded text-xl cursor-pointer transition duration-300 hover:bg-gray-700">
+            Connect
           </button>
-          {loginResponse && <p className="success-message">{loginResponse}</p>}
+          {loginResponse && <p className="text-green-500 mt-4">{loginResponse}</p>}
         </form>
-        <form onSubmit={handleRegistrationSubmit} className="form-container">
-          <h2>Inscription</h2>
-          <div className="form-group">
-            <label>Email:</label>
+        <div className="w-px bg-gray-700 h-96"></div>
+        <form onSubmit={handleRegistrationSubmit} className=" w-1/2 p-8  max-w-xl">
+          <h1 className="text-3xl mb-4 text-black flex  flex-row gap-2"> <p className='font-bold text-black'>FIRST</p> VISIT ?</h1>
+          <h2 className="text-xl mb-4 text-black">Register now !</h2>
+          <div className="mb-6">
+            <label className="block font-bold text-black">Mail:</label>
             <input
               type="email"
               name="email"
               value={registrationData.email}
               onChange={handleInputChange}
-              className="input-field"
+              className="w-full p-3 border border-gray-300 rounded text-black"
             />
           </div>
-          <div className="form-group">
-            <label>Mot de passe:</label>
+          <div className="mb-6">
+            <label className="block font-bold text-black">Password:</label>
             <input
               type="password"
               name="plainPassword"
               value={registrationData.plainPassword}
               onChange={handleInputChange}
-              className="input-field"
+              className="w-full p-3 border border-gray-300 rounded text-black"
             />
           </div>
-          <div className="form-group">
-            <label>Confirmer le mot de passe:</label>
+          <div className="mb-6">
+            <label className="block font-bold text-black">Confirm Password:</label>
             <input
               type="password"
               name="confirmPassword"
               value={registrationData.confirmPassword}
               onChange={handleInputChange}
-              className="input-field"
+              className="w-full p-3 border border-gray-300 rounded text-black"
             />
           </div>
-          <button type="submit" className="submit-button">
-            S'inscrire
+          <button type="submit" className="w-full bg-black text-white p-3 rounded text-xl cursor-pointer transition duration-300 hover:bg-gray-700">
+            Register
           </button>
-          {registrationResponse && <p className="success-message">{registrationResponse}</p>}
+          {registrationResponse && <p className="text-green-500 mt-4">{registrationResponse}</p>}
         </form>
       </div>
       <Footer />
     </div>
+
   );
 };
 
