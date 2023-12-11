@@ -10,23 +10,19 @@ import BottonRefresh from '../components/bottonRefresh'
 import Outils from '../components/outils'
 
 const PageSculpt: React.FC = () => {
-    const [infoFromChild, setInfoFromChild] = useState<number | undefined>();
+    const [toolSize, settoolSize] = useState<number>();
   
-    const handleChildInfo = (info: number) => {
-      setInfoFromChild(info);
+    const handleClick = (info: number) => {
+      settoolSize(info);
     };
-  
-    useEffect(() => {
-      
-      console.log(infoFromChild);
-    }, [infoFromChild]);
+
   
     return (
       <main className="flex min-h-screen flex-col items-center justify-between">
           <Header></Header>
-          <Sculpt infoFromChild={infoFromChild !== undefined ? infoFromChild.toString() : " nul"}></Sculpt>
+          <Sculpt toolSize={toolSize}></Sculpt>
           <BottonRefresh></BottonRefresh>
-          <Outils onChildInfo={handleChildInfo}></Outils>
+          <Outils handleClick={handleClick} ></Outils>
           <Botton></Botton>
           <Footer></Footer>
       </main>

@@ -7,18 +7,18 @@ import { useSearchParams } from 'next/navigation'
 interface CubeInfo {
   cellSize: number;
 }
-interface SculptProps  {
-  infoFromChild: string;
+interface SculptProps {
+  toolSize?: number;
 }
 
-const Sculpt: React.FC<SculptProps>  = ({ infoFromChild }) => {
+const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState(9);
   const [showOptions, setShowOptions] = useState(true);
   const [isOptionsOpen, setIsOptionsOpen] = useState(true);
   const [canvasEvents, setCanvasEvents] = useState('none');
   const [historiqueCubes, setHistoriqueCubes] = useState<CubeInfo[]>([]);
-
+  
   const handleOptionClick = (size: number) => {
     setCellSize(size);
     setShowOptions(false);
@@ -30,8 +30,6 @@ const Sculpt: React.FC<SculptProps>  = ({ infoFromChild }) => {
     };
 
     setHistoriqueCubes([...historiqueCubes, cubeInfo]);
-    console.log(cubeInfo)
-    console.log(historiqueCubes)
   };
   const searchParams = useSearchParams()
   const name = searchParams.get('name')
@@ -153,12 +151,9 @@ const Sculpt: React.FC<SculptProps>  = ({ infoFromChild }) => {
 
         //------------- Fonction au click --------------------------
         
-        const nombreDeBlocsCassables = 2; // Vous pouvez changer cette valeur selon vos besoins
 
         function onMouseClick(event) {
-        console.log(nombreDeBlocsCassables)
-        event.preventDefault();
-        console.log("nombre de bloc"+ infoFromChild)
+          event.preventDefault();
         
           mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
           mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
@@ -173,7 +168,7 @@ const Sculpt: React.FC<SculptProps>  = ({ infoFromChild }) => {
         
             if (selectedIndex !== -1) {
               // Retirer le nombre de blocs cassables spécifié
-              for (let i = 0; i < nombreDeBlocsCassables; i++) {
+              for (let i = 0; i < toolSize; i++) {
                   const cubeIndexToRemove = selectedIndex;
                   if (cubeIndexToRemove < cubes.length) {
                       const cubeToRemove = cubes[cubeIndexToRemove];
@@ -248,7 +243,7 @@ const Sculpt: React.FC<SculptProps>  = ({ infoFromChild }) => {
 
       main();
     }
-  }, [showOptions, cellSize, canvasEvents]);
+  }, [showOptions, cellSize, canvasEvents, toolSize]);
 
   return (
     <div className="w-full h-full overflow-hidden relative ">
