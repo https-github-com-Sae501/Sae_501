@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@react-three/fiber": "^8.14.6",
+    "axios": "^1.6.2",
     "fs": "^0.0.1-security",
     "next": "^13.5.5",
     "query-string": "^8.1.0",
