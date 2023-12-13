@@ -18,7 +18,8 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
   const [isOptionsOpen, setIsOptionsOpen] = useState(true);
   const [canvasEvents, setCanvasEvents] = useState('none');
   const [historiqueCubes, setHistoriqueCubes] = useState<CubeInfo[]>([]);
-  
+  const [cubesCreated, setCubesCreated] = useState(false);
+
   const handleOptionClick = (size: number) => {
     setCellSize(size);
     setShowOptions(false);
@@ -61,7 +62,6 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
         const far = 1000;
         const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
         camera.position.set(-cellSize * 0.8, cellSize * 1.3, -cellSize * 0.8);
-
         const controls = new OrbitControls(camera, canvas);
         controls.target.set(cellSize / 2, cellSize / 3, cellSize / 2);
         controls.mouseButtons = {
@@ -95,6 +95,7 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
         const cubes = [];
         const deletedCubes = [];
 
+        // Code de création des cubes
         for (let y = 0; y < cellSize; ++y) {
           for (let z = 0; z < cellSize; ++z) {
             for (let x = 0; x < cellSize; ++x) {
@@ -119,6 +120,7 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
           }
         }
 
+
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
 
@@ -130,14 +132,17 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
 
         function loadHistoriqueCubesFromLocalStorage() {
           const jsonString = localStorage.getItem(name);
-
+          const jsonStringHistoriqueCubes = localStorage.getItem('historiqueCubes');
           if (jsonString) {
             const historiqueCubes = JSON.parse(jsonString);
-            const tailles = historiqueCubes.length > 0 ? historiqueCubes[0].taille : null;
-            setCellSize(tailles)
-            setShowOptions(false)
-
-            historiqueCubes.forEach(cubeInfo => {
+            const historiqueCubesFromStorage = jsonStringHistoriqueCubes ? JSON.parse(jsonStringHistoriqueCubes) : [];
+            const combinedHistoriqueCubes = [...historiqueCubes, ...historiqueCubesFromStorage];
+        
+            const tailles = combinedHistoriqueCubes.length > 0 ? combinedHistoriqueCubes[0].taille : null;
+            setCellSize(tailles);
+            setShowOptions(false);
+        
+            combinedHistoriqueCubes.forEach(cubeInfo => {
               cubes.forEach((cube, index) => {
                 if (cube.position.equals(cubeInfo.position)) {
                   scene.remove(cube);
@@ -148,53 +153,145 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
           }
         }
         loadHistoriqueCubesFromLocalStorage();
-
-        //------------- Fonction au click --------------------------
         
+
+
+        // function HistoriqueCubesFromLocalStorage() {
+        //   const jsonString = localStorage.getItem('historiquecubes');
+        //   console.log(jsonString)
+
+        //   if (jsonString) {
+        //     const historiqueCubes = JSON.parse(jsonString);
+
+        //     // Charger la première taille de cube depuis l'historiqueCubes (s'il y en a)
+        //     const taille = historiqueCubes.length > 0 ? historiqueCubes[0].taille : null;
+
+        //     // Mettre à jour la taille du cube et masquer les options
+        //     setCellSize(taille);
+        //     setShowOptions(false);
+
+        //     // Parcourir les cubes existants
+        //     cubes.forEach((cube, index) => {
+        //       // Vérifier si la position du cube correspond à celle d'un cube dans l'historique
+        //       const matchingCube = historiqueCubes.find((cubeInfo) => cube.position.equals(cubeInfo.position));
+
+        //       // Si une correspondance est trouvée, retirer le cube de la scène et du tableau
+        //       if (matchingCube) {
+        //         scene.remove(cube);
+        //         cubes.splice(index, 1);
+        //       }
+        //     });
+        //   }
+        //   console.log('zsdhjf')
+        // }
+        // HistoriqueCubesFromLocalStorage()
+        //------------- Fonction au click --------------------------
 
         function onMouseClick(event) {
           event.preventDefault();
-        
+
           mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
           mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
           raycaster.setFromCamera(mouse, camera);
-        
+
           const intersects = raycaster.intersectObjects(cubes);
-        
+
           if (intersects.length > 0) {
             const selectedCube = intersects[0].object;
-        
             const selectedIndex = cubes.indexOf(selectedCube);
-        
+
             if (selectedIndex !== -1) {
-              // Retirer le nombre de blocs cassables spécifié
-              for (let i = 0; i < toolSize; i++) {
-                  const cubeIndexToRemove = selectedIndex;
-                  if (cubeIndexToRemove < cubes.length) {
-                      const cubeToRemove = cubes[cubeIndexToRemove];
-                      scene.remove(cubeToRemove);
-                      cubes.splice(cubeIndexToRemove, 1);
-                      deletedCubes.push(cubeToRemove);
-                  }
+              const cubeIndexToRemove = selectedIndex;
+
+              // Suppression en fonction de la valeur de toolSize
+              switch (toolSize) {
+                case 1:
+                  // Supprimer uniquement le bloc cliqué
+                  removeSingleCube(cubeIndexToRemove);
+                  break;
+                case 2:
+                  // Supprimer le bloc cliqué et le bloc à gauche s'il existe
+                  removeSingleCube(cubeIndexToRemove);
+                  removeSingleCube(cubeIndexToRemove - 1);
+                  break;
+                case 4:
+                  // Supprimer les blocs autour du bloc cliqué
+                  removeBlocksWithinRadius(cubeIndexToRemove, 1);
+                  break;
+                // Ajoutez d'autres cas selon les besoins
+                default:
+                  break;
               }
-          
-              // Mettre à jour l'historique
-              const cubeInfo = {
-                  position: selectedCube.position.clone(),
-                  taille: cellSize,
-              };
-              historiqueCubes.push(cubeInfo);
-          
-              const jsonString = JSON.stringify(historiqueCubes);
-              localStorage.setItem('historiqueCubes', jsonString);
-          
+
               requestRenderIfNotRequested();
-          }
-          
+
+              // Enregistrement dans l'historique des cubes après la suppression
+              saveToHistoriqueCubes();
+            }
           }
         }
-        
-        
+
+        // Fonction pour enregistrer dans l'historique des cubes
+        function saveToHistoriqueCubes() {
+          const historiqueCubesData = [];
+
+          deletedCubes.forEach(cube => {
+            const cubeInfo = {
+              position: cube.position.clone(),
+              taille: cellSize,
+            };
+            historiqueCubesData.push(cubeInfo);
+          });
+
+          // Récupérer les données existantes dans le stockage local
+          const existingDataString = localStorage.getItem('historiqueCubes');
+          const existingData = existingDataString ? JSON.parse(existingDataString) : [];
+
+          // Fusionner les données existantes avec les nouvelles données
+          const combinedData = [...existingData, ...historiqueCubesData];
+
+          // Enregistrer le résultat dans le stockage local
+          const jsonString = JSON.stringify(combinedData);
+          localStorage.setItem('historiqueCubes', jsonString);
+
+        }
+
+
+
+        function removeSingleCube(index) {
+          if (index < cubes.length) {
+            const cubeToRemove = cubes[index];
+            scene.remove(cubeToRemove);
+            cubes.splice(index, 1);
+            deletedCubes.push(cubeToRemove);
+          }
+
+        }
+
+        function removeBlocksWithinRadius(centerIndex, radius) {
+          const centerPosition = cubes[centerIndex].position;
+          const cubesToRemoveIndices = [];
+
+          for (let i = 0; i < cubes.length; i++) {
+            const cube = cubes[i];
+            const distance = centerPosition.distanceTo(cube.position);
+
+            if (distance <= radius) {
+              scene.remove(cube);
+              deletedCubes.push(cube);
+              cubesToRemoveIndices.push(i);
+            }
+          }
+
+          // Supprime les blocs du tableau cubes après le parcours
+          for (const index of cubesToRemoveIndices) {
+            cubes.splice(index, 1);
+          }
+        }
+
+
+
+
         //------------- Restorer un Cube --------------------------
         function restoreDeletedCube() {
           if (deletedCubes.length > 0) {
@@ -243,7 +340,10 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
 
       main();
     }
+
   }, [showOptions, cellSize, canvasEvents, toolSize]);
+
+  
 
   return (
     <div className="w-full h-full overflow-hidden relative ">
@@ -277,7 +377,7 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
         className="absolute top-[3.5rem] left-[4.5rem] px-3 py-2 bg-black text-white rounded-md cursor-pointer select-none"
         onClick={handleLookingBack}
       >
-        UNDO 
+        UNDO
       </button>
       <canvas className="overflow-hidden" id="c" style={{ width: '100%', height: '100%' }}></canvas>
     </div>

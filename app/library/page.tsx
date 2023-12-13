@@ -9,6 +9,8 @@ import Link from 'next/link';
 const LibraryPage = () => {
   const [localStorageKeys, setLocalStorageKeys] = useState([]);
   
+  localStorage.removeItem('historiqueCubes');
+
   useEffect(() => {
     const keys = [];
     for (let i = 0; i < localStorage.length; i++) {
