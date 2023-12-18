@@ -1,4 +1,4 @@
-"use client";
+  "use client";
 
 import React, { useEffect, useState } from 'react';
 import Header from '../components/header';
@@ -7,20 +7,22 @@ import BottonCreate from '../components/bottonCreate';
 import Link from 'next/link';
 
 const LibraryPage = () => {
-  const [localStorageKeys, setLocalStorageKeys] = useState([]);
-  
-  localStorage.removeItem('historiqueCubes');
+  const [localStorageKeys, setLocalStorageKeys] = useState<Array<string | null>>([]);
 
+
+  // Vérifiez si localStorage est disponible
   useEffect(() => {
-    const keys = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      
-      if (key !== 'ally-supports-cache' && key !== 'historiqueCubes') {
-        keys.push(key);
+    if (typeof window !== 'undefined') {
+      const keys = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+
+        if (key !== 'ally-supports-cache' && key !== 'historiqueCubes') {
+          keys.push(key);
+        }
       }
+      setLocalStorageKeys(keys);
     }
-    setLocalStorageKeys(keys);
   }, []);
 
   return (

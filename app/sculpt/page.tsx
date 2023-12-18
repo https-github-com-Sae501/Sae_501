@@ -15,14 +15,17 @@ const PageSculpt: React.FC = () => {
     const handleClick = (info: number) => {
       settoolSize(info);
     };
-
+    useEffect(() => {
+      if (typeof window !== 'undefined') {
+      }
+    }, []);
   
     return (
       <main className="flex min-h-screen flex-col items-center justify-between">
           <Header></Header>
           <Sculpt toolSize={toolSize}></Sculpt>
           <BottonRefresh></BottonRefresh>
-          <Outils handleClick={handleClick} ></Outils>
+          <Outils handleClick={handleClick}></Outils>
           <Botton></Botton>
           <Footer></Footer>
       </main>
