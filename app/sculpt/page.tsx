@@ -10,7 +10,7 @@ import BottonRefresh from '../components/bottonRefresh'
 import Outils from '../components/outils'
 
 const PageSculpt: React.FC = () => {
-    const [toolSize, settoolSize] = useState<number>();
+    const [toolSize, settoolSize] = useState<number>(1);
   
     const handleClick = (info: number) => {
       settoolSize(info);

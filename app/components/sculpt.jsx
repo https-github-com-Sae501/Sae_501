@@ -126,25 +126,35 @@ const Sculpt =({ toolSize }) => {
         function loadHistoriqueCubesFromLocalStorage() {
           const jsonString = localStorage.getItem(name);
           const jsonStringHistoriqueCubes = localStorage.getItem('historiqueCubes');
+        
+          let historiqueCubesData;
+        
           if (jsonString) {
-            const historiqueCubes = JSON.parse(jsonString);
-            const historiqueCubesFromStorage = jsonStringHistoriqueCubes ? JSON.parse(jsonStringHistoriqueCubes) : [];
-            const combinedHistoriqueCubes = [...historiqueCubes, ...historiqueCubesFromStorage];
-        
-            const tailles = combinedHistoriqueCubes.length > 0 ? combinedHistoriqueCubes[0].taille : null;
-            setCellSize(tailles);
-            setShowOptions(false);
-        
-            combinedHistoriqueCubes.forEach(cubeInfo => {
-              cubes.forEach((cube, index) => {
-                if (cube.position.equals(cubeInfo.position)) {
-                  scene.remove(cube);
-                  cubes.splice(index, 1);
-                }
-              });
-            });
+            // Si jsonString existe, utilisez-le comme source principale d'historiqueCubesData
+            historiqueCubesData = JSON.parse(jsonString);
+          } else if (jsonStringHistoriqueCubes) {
+            // Si jsonString est null mais jsonStringHistoriqueCubes existe,
+            // utilisez-le comme source alternative d'historiqueCubesData
+            historiqueCubesData = JSON.parse(jsonStringHistoriqueCubes);
+          } else {
+            // Si les deux sont null, il n'y a pas d'historiqueCubesData
+            historiqueCubesData = [];
           }
+        
+          const tailles = historiqueCubesData.length > 0 ? historiqueCubesData[0].taille : null;
+          setCellSize(tailles);
+          setShowOptions(false);
+        
+          historiqueCubesData.forEach(cubeInfo => {
+            cubes.forEach((cube, index) => {
+              if (cube.position.equals(cubeInfo.position)) {
+                scene.remove(cube);
+                cubes.splice(index, 1);
+              }
+            });
+          });
         }
+        
         loadHistoriqueCubesFromLocalStorage();
         //------------- Fonction au click --------------------------
 
