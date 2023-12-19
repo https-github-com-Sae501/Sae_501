@@ -59,7 +59,7 @@ const Popup: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Title"
-                  className="text-black w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-2 border border-gray-300 rounded"
                   value={localStorageName}
                   onChange={handleNameChange}
                 />

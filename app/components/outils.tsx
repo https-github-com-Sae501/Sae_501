@@ -1,7 +1,11 @@
 "use client";
 import React, { useState } from 'react';
 
-function Outils({ handleClick }){
+interface OutilsProps {
+  handleClick: (value: number) => void;
+}
+
+const Outils: React.FC<OutilsProps> = ({ handleClick }) => {
 
   return (
     <div className="fixed left-10 top-1/2 transform -translate-y-1/2  border-2 border-black rounded-lg w-max h-max">

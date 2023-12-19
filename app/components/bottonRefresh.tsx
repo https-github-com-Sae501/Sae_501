@@ -10,7 +10,7 @@ const BottonRefresh: React.FC = () => {
 
         // Réinitialise la scène en recréant les cubes
         const jsonString = localStorage.getItem('historiqueCubes');
-        const historiqueCubes = JSON.parse(jsonString) || [];
+        const historiqueCubes = jsonString ? JSON.parse(jsonString) : [];
         
         // Efface les données du localStorage
         localStorage.removeItem('historiqueCubes');

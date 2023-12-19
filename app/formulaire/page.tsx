@@ -20,12 +20,6 @@ const Formulaire: React.FC = () => {
   const [loginResponse, setLoginResponse] = useState<string | null>(null);
 
   useEffect(() => {
-    const authToken = localStorage.getItem('authToken');
-    
-    if (authToken) {
-      console.log('L\'utilisateur est déjà connecté.');
-       window.location.href = '/';
-    }
   }, []);
 
   const handleRegistrationSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -38,7 +32,7 @@ const Formulaire: React.FC = () => {
 
     try {
       const response = await Axios.post(
-        'http://127.0.0.1:8000/api/users',
+        'https://127.0.0.1:8000/api/users',
         registrationData,
         {
           headers: {
@@ -64,19 +58,18 @@ const Formulaire: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await Axios.post('http://127.0.0.1:8000/authentication_token', loginData);
+      const response = await Axios.post('https://127.0.0.1:8000/authentication_token', loginData);
       const token = response.data.token;
 
       localStorage.setItem('authToken', token);
 
       setLoginResponse('Connexion réussie !');
 
+  
       setLoginData({
         email: '',
         password: '',
       });
-
-      window.location.href = '/';
     } catch (error) {
       console.error(error);
       setLoginResponse('Une erreur s\'est produite lors de la connexion. Veuillez réessayer.');
@@ -120,7 +113,7 @@ const Formulaire: React.FC = () => {
               className="w-full p-3 border border-gray-300 rounded text-black"
             />
           </div>
-          <button type="submit" className=" w-full bg-black text-white p-3 rounded text-xl cursor-pointer transition duration-300 hover:bg-gray-700">
+          <button type="submit" className="w-full bg-black text-white p-3 rounded text-xl cursor-pointer transition duration-300 hover:bg-gray-700">
             Connect
           </button>
           {loginResponse && <p className="text-green-500 mt-4">{loginResponse}</p>}

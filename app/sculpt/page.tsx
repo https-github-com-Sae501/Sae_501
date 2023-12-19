@@ -10,19 +10,22 @@ import BottonRefresh from '../components/bottonRefresh'
 import Outils from '../components/outils'
 
 const PageSculpt: React.FC = () => {
-    const [toolSize, settoolSize] = useState<number>();
+    const [toolSize, settoolSize] = useState<number>(1);
   
     const handleClick = (info: number) => {
       settoolSize(info);
     };
-
+    useEffect(() => {
+      if (typeof window !== 'undefined') {
+      }
+    }, []);
   
     return (
       <main className="flex min-h-screen flex-col items-center justify-between">
           <Header></Header>
           <Sculpt toolSize={toolSize}></Sculpt>
           <BottonRefresh></BottonRefresh>
-          <Outils handleClick={handleClick} ></Outils>
+          <Outils handleClick={handleClick}></Outils>
           <Botton></Botton>
           <Footer></Footer>
       </main>
