@@ -5,12 +5,14 @@ import Header from '../components/header';
 import Footer from '../components/footer';
 import BottonCreate from '../components/bottonCreate';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const LibraryPage = () => {
-  const [localStorageKeys, setLocalStorageKeys] = useState<Array<string | null>>([]);
-
-  localStorage.setItem('historiqueCubes', '');
   
+  const [localStorageKeys, setLocalStorageKeys] = useState<Array<string | null>>([]);
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('historiqueCubes', '');
+  }
   // Vérifiez si localStorage est disponible
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -35,7 +37,7 @@ const LibraryPage = () => {
           <li key={index}>
             <Link href={`/sculpt?name=${key}`}>
               <div className='flex flex-col items-center'>
-                <img src="../sculptureBase.PNG" alt="SculptureDeBase" width={250} height={250}/>
+                <Image src="/sculptureBase.PNG" alt="SculptureDeBase" width={250} height={250}/>
                 <p>{key}</p>
               </div>
             
