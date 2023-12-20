@@ -32,7 +32,7 @@ const LibraryPage = () => {
     <div className="bg-white h-screen w-screen color-foreground">
       <Header />
       <h1 className="text-4xl font-bold p-4 pt-12">Library</h1>
-      <ul className='px-8 grid grid-cols-6 max-w-screen max-h-full gap-3'>
+      <ul className='px-8 grid grid-cols-3  md:grid-cols-4 lg:grid-cols-6 max-w-screen max-h-full gap-3'>
         {localStorageKeys.map((key, index) => (
           <li key={index}>
             <Link href={`/sculpt?name=${key}`}>

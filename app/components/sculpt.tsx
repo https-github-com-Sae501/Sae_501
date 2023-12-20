@@ -53,97 +53,94 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const main = function() {
+      const main = function () {
         const canvas = document.querySelector('#c') as HTMLCanvasElement;
-        // if (canvasElement instanceof HTMLCanvasElement || canvasElement instanceof OffscreenCanvas) {
-        //   const canvas = canvasElement;
+        const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+        const fov = 75;
+        const aspect = window.innerWidth / window.innerHeight;
+        const near = 0.1;
+        const far = 1000;
+        const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+        camera.position.set(-cellSize * 0.8, cellSize * 1.3, -cellSize * 0.8);
+        const controls = new OrbitControls(camera, canvas);
+        controls.target.set(cellSize / 2, cellSize / 3, cellSize / 2);
+        controls.mouseButtons = {
+          MIDDLE: THREE.MOUSE.DOLLY,
+          RIGHT: THREE.MOUSE.ROTATE, // Activer la rotation avec le bouton droit
+        };
 
-          const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
-          const fov = 75;
-          const aspect = window.innerWidth / window.innerHeight;
-          const near = 0.1;
-          const far = 1000;
-          const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-          camera.position.set(-cellSize * 0.8, cellSize * 1.3, -cellSize * 0.8);
-          const controls = new OrbitControls(camera, canvas);
-          controls.target.set(cellSize / 2, cellSize / 3, cellSize / 2);
-          controls.mouseButtons = {
-            MIDDLE: THREE.MOUSE.DOLLY,
-            RIGHT: THREE.MOUSE.ROTATE, // Activer la rotation avec le bouton droit
-          };
+        if (!showOptions) {
+          handleOptionClick(cellSize);
+        }
 
-          if (!showOptions) {
-            handleOptionClick(cellSize);
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color('lightblue');
+
+        const addLight = function (x: number, y: number, z: number) {
+          const color = 0xFFFFFF;
+          const intensity = 3;
+          const light = new THREE.DirectionalLight(color, intensity);
+          light.position.set(x, y, z);
+          scene.add(light);
+        }
+
+        addLight(-1, 2, 4);
+        addLight(1, -1, -2);
+
+        const cell = new Uint8Array(cellSize * cellSize * cellSize);
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshPhongMaterial({ color: 'gray' });
+        const cubes: THREE.Mesh[] = [];
+        const deletedCubes: THREE.Mesh[] = [];
+
+        // Code de création des cubes
+        for (let y = 0; y < cellSize; ++y) {
+          for (let z = 0; z < cellSize; ++z) {
+            for (let x = 0; x < cellSize; ++x) {
+              const offset = y * cellSize * cellSize + z * cellSize + x;
+              cell[offset] = 1;
+            }
           }
+        }
 
-          const scene = new THREE.Scene();
-          scene.background = new THREE.Color('lightblue');
-
-          const addLight = function(x:number, y:number, z:number) {
-            const color = 0xFFFFFF;
-            const intensity = 3;
-            const light = new THREE.DirectionalLight(color, intensity);
-            light.position.set(x, y, z);
-            scene.add(light);
-          }
-
-          addLight(-1, 2, 4);
-          addLight(1, -1, -2);
-
-          const cell = new Uint8Array(cellSize * cellSize * cellSize);
-          const geometry = new THREE.BoxGeometry(1, 1, 1);
-          const material = new THREE.MeshPhongMaterial({ color: 'gray' });
-          const cubes: THREE.Mesh[] = [];
-          const deletedCubes: THREE.Mesh[] = [];
-
-          // Code de création des cubes
-          for (let y = 0; y < cellSize; ++y) {
-            for (let z = 0; z < cellSize; ++z) {
-              for (let x = 0; x < cellSize; ++x) {
-                const offset = y * cellSize * cellSize + z * cellSize + x;
-                cell[offset] = 1;
+        for (let y = 0; y < cellSize; ++y) {
+          for (let z = 0; z < cellSize; ++z) {
+            for (let x = 0; x < cellSize; ++x) {
+              const offset = y * cellSize * cellSize + z * cellSize + x;
+              const block = cell[offset];
+              if (block) {
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(x, y, z);
+                scene.add(mesh);
+                cubes.push(mesh);
               }
             }
           }
-
-          for (let y = 0; y < cellSize; ++y) {
-            for (let z = 0; z < cellSize; ++z) {
-              for (let x = 0; x < cellSize; ++x) {
-                const offset = y * cellSize * cellSize + z * cellSize + x;
-                const block = cell[offset];
-                if (block) {
-                  const mesh = new THREE.Mesh(geometry, material);
-                  mesh.position.set(x, y, z);
-                  scene.add(mesh);
-                  cubes.push(mesh);
-                }
-              }
-            }
-          }
+        }
 
 
-          const raycaster = new THREE.Raycaster();
-          const mouse = new THREE.Vector2();
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
 
-          //------------- Fonction au click --------------------------
+        //------------- Fonction au click --------------------------
 
-          const onMouseClick: EventListener = function(event: Event) {
-            const mouseEvent = event as MouseEvent; // Convertir l'événement en MouseEvent
-            mouseEvent.preventDefault();
+        const onMouseClick: EventListener = function (event: Event) {
+          const mouseEvent = event as MouseEvent; // Convertir l'événement en MouseEvent
+          mouseEvent.preventDefault();
 
-            mouse.x = (mouseEvent.clientX / renderer.domElement.clientWidth) * 2 - 1;
-            mouse.y = -(mouseEvent.clientY / renderer.domElement.clientHeight) * 2 + 1;
-            raycaster.setFromCamera(mouse, camera);
+          mouse.x = (mouseEvent.clientX / renderer.domElement.clientWidth) * 2 - 1;
+          mouse.y = -(mouseEvent.clientY / renderer.domElement.clientHeight) * 2 + 1;
+          raycaster.setFromCamera(mouse, camera);
 
-            const intersects = raycaster.intersectObjects(cubes);
+          const intersects = raycaster.intersectObjects(cubes);
 
-            if (intersects.length > 0) {
-              const selectedObject = intersects[0].object;
-              if (selectedObject instanceof THREE.Mesh) {
-                const selectedMesh = selectedObject as THREE.Mesh;
-            
-                // Maintenant, vous pouvez accéder aux propriétés spécifiques à Mesh
-                const selectedIndex = cubes.indexOf(selectedMesh);
+          if (intersects.length > 0) {
+            const selectedObject = intersects[0].object;
+            if (selectedObject instanceof THREE.Mesh) {
+              const selectedMesh = selectedObject as THREE.Mesh;
+
+              // Maintenant, vous pouvez accéder aux propriétés spécifiques à Mesh
+              const selectedIndex = cubes.indexOf(selectedMesh);
 
               if (selectedIndex !== -1) {
                 const cubeIndexToRemove = selectedIndex;
@@ -173,156 +170,156 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
                 // Enregistrement dans l'historique des cubes après la suppression
                 saveToHistoriqueCubes();
               }
-              }
             }
           }
-          
-          //------------- Restorer un Cube --------------------------
-          const restoreDeletedCube = function() {
-            if (deletedCubes.length > 0) {
-              const cubeToRestore = deletedCubes.pop();
-              if (cubeToRestore) {
-                scene.add(cubeToRestore);
-                cubes.push(cubeToRestore);
-                requestRenderIfNotRequested();
-              }
+        }
+
+        //------------- Restorer un Cube --------------------------
+        const restoreDeletedCube = function () {
+          if (deletedCubes.length > 0) {
+            const cubeToRestore = deletedCubes.pop();
+            if (cubeToRestore) {
+              scene.add(cubeToRestore);
+              cubes.push(cubeToRestore);
+              requestRenderIfNotRequested();
             }
           }
+        }
 
-          canvas.addEventListener('click', onMouseClick);
-          const undoButton = document.querySelector('#undoButton');
-          if (undoButton) {
-            undoButton.addEventListener('click', restoreDeletedCube);
-          } else {
-            console.error("L'élément avec l'ID 'undoButton' n'a pas été trouvé dans le document.");
-          }
-          const historiqueCubes = [];
+        canvas.addEventListener('click', onMouseClick);
+        const undoButton = document.querySelector('#undoButton');
+        if (undoButton) {
+          undoButton.addEventListener('click', restoreDeletedCube);
+        } else {
+          console.error("L'élément avec l'ID 'undoButton' n'a pas été trouvé dans le document.");
+        }
+        const historiqueCubes = [];
 
-          //------------- Ouvrir Sculpture --------------------------
+        //------------- Ouvrir Sculpture --------------------------
 
-          const loadHistoriqueCubesFromLocalStorage = function() {
-            const jsonString = localStorage.getItem(name!);
-            const jsonStringHistoriqueCubes = localStorage.getItem('historiqueCubes');
+        const loadHistoriqueCubesFromLocalStorage = function () {
+          const jsonString = localStorage.getItem(name!);
+          const jsonStringHistoriqueCubes = localStorage.getItem('historiqueCubes');
 
-            const historiqueCubes = JSON.parse(jsonString!);
-            const historiqueCubesFromStorage = jsonStringHistoriqueCubes ? JSON.parse(jsonStringHistoriqueCubes) : [];
+          const historiqueCubes = JSON.parse(jsonString!);
+          const historiqueCubesFromStorage = jsonStringHistoriqueCubes ? JSON.parse(jsonStringHistoriqueCubes) : [];
 
-            if (!Array.isArray(historiqueCubes)) {
-              console.error('historiqueCubes is not an array:', historiqueCubes);
-              return;
-            }
-
-            const combinedHistoriqueCubes = [...historiqueCubes, ...historiqueCubesFromStorage];
-
-            const tailles = combinedHistoriqueCubes.length > 0 ? combinedHistoriqueCubes[0].s : null;
-            setCellSize(tailles);
-            setShowOptions(false);
-
-            combinedHistoriqueCubes.forEach(cubeInfo => {
-              cubes.forEach((cube, index) => {
-                if (cube.position.equals(cubeInfo.position)) {
-                  scene.remove(cube);
-                  cubes.splice(index, 1);
-                }
-              });
-            });
+          if (!Array.isArray(historiqueCubes)) {
+            console.error('historiqueCubes is not an array:', historiqueCubes);
+            return;
           }
 
-          loadHistoriqueCubesFromLocalStorage();
+          const combinedHistoriqueCubes = [...historiqueCubes, ...historiqueCubesFromStorage];
 
-          
+          const tailles = combinedHistoriqueCubes.length > 0 ? combinedHistoriqueCubes[0].s : null;
+          setCellSize(tailles);
+          setShowOptions(false);
 
-          // Fonction pour enregistrer dans l'historique des cubes
-          const saveToHistoriqueCubes = function() {
-            const historiqueCubesData: { position: THREE.Vector3, s: number }[] = [];
-
-            deletedCubes.forEach(cube => {
-              const cubeInfo = {
-                position: cube.position.clone(),
-                s: cellSize,
-              };
-              historiqueCubesData.push(cubeInfo);
-            });
-
-            // Récupérer les données existantes dans le stockage local
-            const existingDataString = localStorage.getItem('historiqueCubes');
-            const existingData = existingDataString ? JSON.parse(existingDataString) : [];
-
-            // Fusionner les données existantes avec les nouvelles données
-            const combinedData = [...existingData, ...historiqueCubesData];
-
-            // Enregistrer le résultat dans le stockage local
-            const jsonString = JSON.stringify(combinedData);
-            localStorage.setItem('historiqueCubes', jsonString);
-
-          }
-
-          const removeSingleCube = function(index: number) {
-            if (index < cubes.length) {
-              const cubeToRemove = cubes[index];
-              scene.remove(cubeToRemove);
-              cubes.splice(index, 1);
-              deletedCubes.push(cubeToRemove);
-            }
-
-          }
-
-          const removeBlocksWithinRadius = function(centerIndex: number, radius: number) {
-            const centerPosition = cubes[centerIndex].position;
-            const cubesToRemoveIndices = [];
-
-            for (let i = 0; i < cubes.length; i++) {
-              const cube = cubes[i];
-              const distance = centerPosition.distanceTo(cube.position);
-
-              if (distance <= radius) {
+          combinedHistoriqueCubes.forEach(cubeInfo => {
+            cubes.forEach((cube, index) => {
+              if (cube.position.equals(cubeInfo.position)) {
                 scene.remove(cube);
-                deletedCubes.push(cube);
-                cubesToRemoveIndices.push(i);
+                cubes.splice(index, 1);
               }
-            }
+            });
+          });
+        }
 
-            // Supprime les blocs du tableau cubes après le parcours
-            for (const index of cubesToRemoveIndices) {
-              cubes.splice(index, 1);
+        loadHistoriqueCubesFromLocalStorage();
+
+
+
+        // Fonction pour enregistrer dans l'historique des cubes
+        const saveToHistoriqueCubes = function () {
+          const historiqueCubesData: { position: THREE.Vector3, s: number }[] = [];
+
+          deletedCubes.forEach(cube => {
+            const cubeInfo = {
+              position: cube.position.clone(),
+              s: cellSize,
+            };
+            historiqueCubesData.push(cubeInfo);
+          });
+
+          // Récupérer les données existantes dans le stockage local
+          const existingDataString = localStorage.getItem('historiqueCubes');
+          const existingData = existingDataString ? JSON.parse(existingDataString) : [];
+
+          // Fusionner les données existantes avec les nouvelles données
+          const combinedData = [...existingData, ...historiqueCubesData];
+
+          // Enregistrer le résultat dans le stockage local
+          const jsonString = JSON.stringify(combinedData);
+          localStorage.setItem('historiqueCubes', jsonString);
+
+        }
+
+        const removeSingleCube = function (index: number) {
+          if (index < cubes.length) {
+            const cubeToRemove = cubes[index];
+            scene.remove(cubeToRemove);
+            cubes.splice(index, 1);
+            deletedCubes.push(cubeToRemove);
+          }
+
+        }
+
+        const removeBlocksWithinRadius = function (centerIndex: number, radius: number) {
+          const centerPosition = cubes[centerIndex].position;
+          const cubesToRemoveIndices = [];
+
+          for (let i = 0; i < cubes.length; i++) {
+            const cube = cubes[i];
+            const distance = centerPosition.distanceTo(cube.position);
+
+            if (distance <= radius) {
+              scene.remove(cube);
+              deletedCubes.push(cube);
+              cubesToRemoveIndices.push(i);
             }
           }
 
-          const resizeRendererToDisplaySize = function() {
+          // Supprime les blocs du tableau cubes après le parcours
+          for (const index of cubesToRemoveIndices) {
+            cubes.splice(index, 1);
+          }
+        }
+
+        const resizeRendererToDisplaySize = function () {
+          const canvas = renderer.domElement;
+          const width = canvas.clientWidth;
+          const height = canvas.clientHeight;
+          const needResize = canvas.width !== width || canvas.height !== height;
+          if (needResize) {
+            renderer.setSize(width, height, false);
+          }
+          return needResize;
+        }
+
+        let renderRequested = false;
+
+        const render = function () {
+          renderRequested = false;
+          if (resizeRendererToDisplaySize()) {
             const canvas = renderer.domElement;
-            const width = canvas.clientWidth;
-            const height = canvas.clientHeight;
-            const needResize = canvas.width !== width || canvas.height !== height;
-            if (needResize) {
-              renderer.setSize(width, height, false);
-            }
-            return needResize;
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
           }
+          controls.update();
+          renderer.render(scene, camera);
+        }
 
-          let renderRequested = false;
+        render();
 
-          const render = function() {
-            renderRequested = false;
-            if (resizeRendererToDisplaySize()) {
-              const canvas = renderer.domElement;
-              camera.aspect = canvas.clientWidth / canvas.clientHeight;
-              camera.updateProjectionMatrix();
-            }
-            controls.update();
-            renderer.render(scene, camera);
+        const requestRenderIfNotRequested = function () {
+          if (!renderRequested) {
+            renderRequested = true;
+            requestAnimationFrame(render);
           }
+        }
 
-          render();
-
-          const requestRenderIfNotRequested = function() {
-            if (!renderRequested) {
-              renderRequested = true;
-              requestAnimationFrame(render);
-            }
-          }
-
-          controls.addEventListener('change', requestRenderIfNotRequested);
-          window.addEventListener('resize', requestRenderIfNotRequested);
+        controls.addEventListener('change', requestRenderIfNotRequested);
+        window.addEventListener('resize', requestRenderIfNotRequested);
         // }
       }
 
@@ -367,7 +364,7 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
       >
         UNDO
       </button>
-      <canvas className="overflow-hidden" id="c" style={{ width: '100%', height: '100%' }}></canvas>
+      <canvas className="overflow-hidden" id="c" style={{ width: '100vw', height: '100vh' }}></canvas>
     </div>
 
 
