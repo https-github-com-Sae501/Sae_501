@@ -2,18 +2,26 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { useSearchParams } from 'next/navigation';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import axios from 'axios';
 
-const Sculpt =({ toolSize }) => {
+interface CubeInfo {
+  cellSize: number;
+}
+interface SculptProps {
+  toolSize?: number;
+}
+
+const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
   // const containerRef = useRef<HTMLDivElement>(null);
-  const [cellSize, setCellSize] = useState(9);
+  const [cellSize, setCellSize] = useState<number>(0);
   const [showOptions, setShowOptions] = useState(true);
   const [isOptionsOpen, setIsOptionsOpen] = useState(true);
   const [canvasEvents, setCanvasEvents] = useState('none');
-  const [historiqueCubes, setHistoriqueCubes] = useState([]);
+  const [historiqueCubes, setHistoriqueCubes] = useState<Array<string | { cellSize: number; }>>(['']);
   const [cubesCreated, setCubesCreated] = useState(false);
 
-  const handleOptionClick = (size) => {
+  const handleOptionClick = (size: number) => {
     setCellSize(size);
     setShowOptions(false);
     setIsOptionsOpen(false);
@@ -46,8 +54,8 @@ const Sculpt =({ toolSize }) => {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      function main() {
-        const canvas = document.querySelector('#c');
+      const main = function () {
+        const canvas = document.querySelector('#c') as HTMLCanvasElement;
         const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
         const fov = 75;
         const aspect = window.innerWidth / window.innerHeight;
@@ -66,12 +74,10 @@ const Sculpt =({ toolSize }) => {
           handleOptionClick(cellSize);
         }
 
-        canvas.style.pointerEvents = canvasEvents;
-
         const scene = new THREE.Scene();
         scene.background = new THREE.Color('lightblue');
 
-        function addLight(x, y, z) {
+        const addLight = function (x: number, y: number, z: number) {
           const color = 0xFFFFFF;
           const intensity = 3;
           const light = new THREE.DirectionalLight(color, intensity);
@@ -85,8 +91,8 @@ const Sculpt =({ toolSize }) => {
         const cell = new Uint8Array(cellSize * cellSize * cellSize);
         const geometry = new THREE.BoxGeometry(1, 1, 1);
         const material = new THREE.MeshPhongMaterial({ color: 'gray' });
-        const cubes = [];
-        const deletedCubes = [];
+        const cubes: THREE.Mesh[] = [];
+        const deletedCubes: THREE.Mesh[] = [];
 
         // Code de création des cubes
         for (let y = 0; y < cellSize; ++y) {
@@ -117,99 +123,129 @@ const Sculpt =({ toolSize }) => {
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
 
-        canvas.addEventListener('click', onMouseClick);
-        document.querySelector('#undoButton').addEventListener('click', restoreDeletedCube);
-        const historiqueCubes = [];
-
-        //------------- Ouvrir Sculpture --------------------------
-
-        function loadHistoriqueCubesFromLocalStorage() {
-          const jsonString = localStorage.getItem(name);
-          const jsonStringHistoriqueCubes = localStorage.getItem('historiqueCubes');
-        
-          let historiqueCubesData;
-        
-          if (jsonString) {
-            // Si jsonString existe, utilisez-le comme source principale d'historiqueCubesData
-            historiqueCubesData = JSON.parse(jsonString);
-          } else if (jsonStringHistoriqueCubes) {
-            // Si jsonString est null mais jsonStringHistoriqueCubes existe,
-            // utilisez-le comme source alternative d'historiqueCubesData
-            historiqueCubesData = JSON.parse(jsonStringHistoriqueCubes);
-          } else {
-            // Si les deux sont null, il n'y a pas d'historiqueCubesData
-            historiqueCubesData = [];
-          }
-        
-          const tailles = historiqueCubesData.length > 0 ? historiqueCubesData[0].taille : null;
-          setCellSize(tailles);
-          setShowOptions(false);
-        
-          historiqueCubesData.forEach(cubeInfo => {
-            cubes.forEach((cube, index) => {
-              if (cube.position.equals(cubeInfo.position)) {
-                scene.remove(cube);
-                cubes.splice(index, 1);
-              }
-            });
-          });
-        }
-        
-        loadHistoriqueCubesFromLocalStorage();
         //------------- Fonction au click --------------------------
 
-        function onMouseClick(event) {
-          event.preventDefault();
+        const onMouseClick: EventListener = function (event: Event) {
+          const mouseEvent = event as MouseEvent; // Convertir l'événement en MouseEvent
+          mouseEvent.preventDefault();
 
-          mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
-          mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+          mouse.x = (mouseEvent.clientX / renderer.domElement.clientWidth) * 2 - 1;
+          mouse.y = -(mouseEvent.clientY / renderer.domElement.clientHeight) * 2 + 1;
           raycaster.setFromCamera(mouse, camera);
 
           const intersects = raycaster.intersectObjects(cubes);
 
           if (intersects.length > 0) {
-            const selectedCube = intersects[0].object;
-            const selectedIndex = cubes.indexOf(selectedCube);
+            const selectedObject = intersects[0].object;
+            if (selectedObject instanceof THREE.Mesh) {
+              const selectedMesh = selectedObject as THREE.Mesh;
 
-            if (selectedIndex !== -1) {
-              const cubeIndexToRemove = selectedIndex;
+              // Maintenant, vous pouvez accéder aux propriétés spécifiques à Mesh
+              const selectedIndex = cubes.indexOf(selectedMesh);
 
-              // Suppression en fonction de la valeur de toolSize
-              switch (toolSize) {
-                case 1:
-                  // Supprimer uniquement le bloc cliqué
-                  removeSingleCube(cubeIndexToRemove);
-                  break;
-                case 2:
-                  // Supprimer le bloc cliqué et le bloc à gauche s'il existe
-                  removeSingleCube(cubeIndexToRemove);
-                  removeSingleCube(cubeIndexToRemove - 1);
-                  break;
-                case 4:
-                  // Supprimer les blocs autour du bloc cliqué
-                  removeBlocksWithinRadius(cubeIndexToRemove, 1);
-                  break;
-                // Ajoutez d'autres cas selon les besoins
-                default:
-                  break;
+              if (selectedIndex !== -1) {
+                const cubeIndexToRemove = selectedIndex;
+
+                // Suppression en fonction de la valeur de toolSize
+                switch (toolSize) {
+                  case 1:
+                    // Supprimer uniquement le bloc cliqué
+                    removeSingleCube(cubeIndexToRemove);
+                    break;
+                  case 2:
+                    // Supprimer le bloc cliqué et le bloc à gauche s'il existe
+                    removeSingleCube(cubeIndexToRemove);
+                    removeSingleCube(cubeIndexToRemove - 1);
+                    break;
+                  case 4:
+                    // Supprimer les blocs autour du bloc cliqué
+                    removeBlocksWithinRadius(cubeIndexToRemove, 1);
+                    break;
+                  // Ajoutez d'autres cas selon les besoins
+                  default:
+                    break;
+                }
+
+                requestRenderIfNotRequested();
+
+                // Enregistrement dans l'historique des cubes après la suppression
+                saveToHistoriqueCubes();
               }
-
-              requestRenderIfNotRequested();
-
-              // Enregistrement dans l'historique des cubes après la suppression
-              saveToHistoriqueCubes();
             }
           }
         }
 
+        //------------- Restorer un Cube --------------------------
+        const restoreDeletedCube = function () {
+          if (deletedCubes.length > 0) {
+            const cubeToRestore = deletedCubes.pop();
+            if (cubeToRestore) {
+              scene.add(cubeToRestore);
+              cubes.push(cubeToRestore);
+              requestRenderIfNotRequested();
+            }
+          }
+        }
+
+        canvas.addEventListener('click', onMouseClick);
+        const undoButton = document.querySelector('#undoButton');
+        if (undoButton) {
+          undoButton.addEventListener('click', restoreDeletedCube);
+        } else {
+          console.error("L'élément avec l'ID 'undoButton' n'a pas été trouvé dans le document.");
+        }
+        const historiqueCubes = [];
+
+        //------------- Ouvrir Sculpture --------------------------
+
+        const loadHistoriqueCubesFromDatabase = async () => {
+          try {
+            // Effectuer une requête GET vers votre API
+            const response = await axios.get('http://127.0.0.1:8000/api/cubes');
+
+            if (response.status !== 200) {
+              throw new Error(`Error loading cubes. Status: ${response.status}`);
+            }
+
+            // Extraire les données réelles des cubes
+            const cubesData = response.data['hydra:member'];
+
+            if (!Array.isArray(cubesData)) {
+              throw new Error('cubesData is not an array');
+    }
+            // Vous devrez adapter cette partie en fonction de la structure réelle de vos données
+            const combinedHistoriqueCubes = cubesData;
+        
+            const tailles = combinedHistoriqueCubes.length > 0 ? combinedHistoriqueCubes[0].s : null;
+            setCellSize(tailles);
+            setShowOptions(false);
+        
+            combinedHistoriqueCubes.forEach(cubeInfo => {
+              cubes.forEach((cube, index) => {
+                // Assurez-vous que cube.position.equals et cubeInfo.position sont définis correctement
+                if (cube.position.equals(cubeInfo.position)) {
+                  scene.remove(cube);
+                  cubes.splice(index, 1);
+                }
+              });
+            });
+          } catch (error) {
+            console.error('Error loading cubes from the database:', error);
+          }
+        };
+        
+        loadHistoriqueCubesFromDatabase();
+
+
+
         // Fonction pour enregistrer dans l'historique des cubes
-        function saveToHistoriqueCubes() {
-          const historiqueCubesData = [];
+        const saveToHistoriqueCubes = function () {
+          const historiqueCubesData: { position: THREE.Vector3, s: number }[] = [];
 
           deletedCubes.forEach(cube => {
             const cubeInfo = {
               position: cube.position.clone(),
-              taille: cellSize,
+              s: cellSize,
             };
             historiqueCubesData.push(cubeInfo);
           });
@@ -227,9 +263,7 @@ const Sculpt =({ toolSize }) => {
 
         }
 
-
-
-        function removeSingleCube(index) {
+        const removeSingleCube = function (index: number) {
           if (index < cubes.length) {
             const cubeToRemove = cubes[index];
             scene.remove(cubeToRemove);
@@ -239,7 +273,7 @@ const Sculpt =({ toolSize }) => {
 
         }
 
-        function removeBlocksWithinRadius(centerIndex, radius) {
+        const removeBlocksWithinRadius = function (centerIndex: number, radius: number) {
           const centerPosition = cubes[centerIndex].position;
           const cubesToRemoveIndices = [];
 
@@ -260,19 +294,7 @@ const Sculpt =({ toolSize }) => {
           }
         }
 
-
-
-
-        //------------- Restorer un Cube --------------------------
-        function restoreDeletedCube() {
-          if (deletedCubes.length > 0) {
-            const cubeToRestore = deletedCubes.pop();
-            scene.add(cubeToRestore);
-            cubes.push(cubeToRestore);
-            requestRenderIfNotRequested();
-          }
-        }
-        function resizeRendererToDisplaySize(renderer) {
+        const resizeRendererToDisplaySize = function () {
           const canvas = renderer.domElement;
           const width = canvas.clientWidth;
           const height = canvas.clientHeight;
@@ -285,9 +307,9 @@ const Sculpt =({ toolSize }) => {
 
         let renderRequested = false;
 
-        function render() {
-          renderRequested = undefined;
-          if (resizeRendererToDisplaySize(renderer)) {
+        const render = function () {
+          renderRequested = false;
+          if (resizeRendererToDisplaySize()) {
             const canvas = renderer.domElement;
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
@@ -298,7 +320,7 @@ const Sculpt =({ toolSize }) => {
 
         render();
 
-        function requestRenderIfNotRequested() {
+        const requestRenderIfNotRequested = function () {
           if (!renderRequested) {
             renderRequested = true;
             requestAnimationFrame(render);
@@ -307,6 +329,7 @@ const Sculpt =({ toolSize }) => {
 
         controls.addEventListener('change', requestRenderIfNotRequested);
         window.addEventListener('resize', requestRenderIfNotRequested);
+        // }
       }
 
       main();
@@ -314,31 +337,31 @@ const Sculpt =({ toolSize }) => {
 
   }, [showOptions, cellSize, canvasEvents, toolSize]);
 
-  
+
 
   return (
     <div className="w-full h-full overflow-hidden relative ">
       {showOptions && (
         <div className="text-black backdrop-blur-md absolute inset-0 flex items-center justify-center">
           <div className="p-4 w-96 text-2xl text-center font-semibold">
-            Choisissez la taille du cube :
+            Choose the size of the cube:
             <div
               onClick={() => handleOptionClick(4)}
               className={`cursor-pointer mt-4 ${cellSize === 4 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
             >
-              Petit
+              Small
             </div>
             <div
               onClick={() => handleOptionClick(8)}
               className={`cursor-pointer mt-4 ${cellSize === 8 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
             >
-              Moyen
+              Medium
             </div>
             <div
               onClick={() => handleOptionClick(16)}
               className={`cursor-pointer mt-4 ${cellSize === 16 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
             >
-              Grand
+              Large
             </div>
           </div>
         </div>
@@ -350,7 +373,7 @@ const Sculpt =({ toolSize }) => {
       >
         UNDO
       </button>
-      <canvas className="overflow-hidden" id="c" style={{ width: '100%', height: '100%' }}></canvas>
+      <canvas className="overflow-hidden" id="c" style={{ width: '100vw', height: '100vh' }}></canvas>
     </div>
 
 
