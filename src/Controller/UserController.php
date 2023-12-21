@@ -32,17 +32,15 @@ public function createUser(Request $request): JsonResponse
         return $this->json(['message' => 'Invalid JSON format'], 400);
     }
 
-    // Créer une instance d'utilisateur
     $user = new User();
     $user->setEmail($data['email']);
+    $user->setPlainPassword($data['plainPassword']);
+    $user->setRoles($data['roles']);
 
-    // Hasher le mot de passe
     $hashedPassword = $this->passwordEncoder->hashPassword($user, $data['password']);
     $user->setPassword($hashedPassword);
 
-    // Autres propriétés...
 
-    // Persister l'utilisateur dans la base de données
     $this->entityManager->persist($user);
     $this->entityManager->flush();
 

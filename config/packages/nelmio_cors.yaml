@@ -2,5 +2,5 @@ nelmio_cors:
     paths:
         '^/': 
             allow_origin: ['*'] 
-            allow_headers: ['Content-Type', 'Authorization'] 
+            allow_headers: ['*']           
             allow_methods: ['GET', 'POST', 'PUT', 'DELETE'] 

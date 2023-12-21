@@ -1,6 +1,4 @@
 <?php
-# api/src/Entity/User.php
-
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiFilter;
@@ -20,6 +18,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ApiResource(
     operations: [
@@ -59,6 +59,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'json')]
     private array $roles = [];
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Cube::class)]
+    private Collection $cubes;
+
+    public function __construct()
+    {
+        $this->cubes = new ArrayCollection();
+        $this->roles = ['ROLE_USER'];
+    }
+
 
     public function getId(): ?int
     {
@@ -108,20 +118,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @see UserInterface
      */
     public function getRoles(): array
-    {
-        $roles = $this->roles;
+{
+    $roles = $this->roles;
 
-        $roles[] = 'ROLE_USER';
+    $roles[] = 'ROLE_USER';
 
-        return array_unique($roles);
-    }
+    return array_unique($roles);
+}
 
     public function setRoles(array $roles): self
-    {
-        $this->roles = $roles;
+{
+    $this->roles = $roles;
 
-        return $this;
-    }
+    // Assurez-vous que chaque utilisateur a au moins le rôle ROLE_USER
+    $this->roles[] = 'ROLE_USER';
+
+    // Supprimez les doublons potentiels
+    $this->roles = array_unique($this->roles);
+
+    return $this;
+}
 
     /**
      * A visual identifier that represents this user.
@@ -140,4 +156,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->plainPassword = null;
     }
-}
+
+    /**
+     * @return Collection<int, Cube>
+     */
+    public function getCubes(): Collection
+    {
+        return $this->cubes;
+    }
+
+    public function addCube(Cube $cube): static
+    {
+        if (!$this->cubes->contains($cube)) {
+            $this->cubes->add($cube);
+            $cube->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCube(Cube $cube): static
+    {
+        if ($this->cubes->removeElement($cube)) {
+            // set the owning side to null (unless already changed)
+            if ($cube->getUser() === $this) {
+                $cube->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+ }

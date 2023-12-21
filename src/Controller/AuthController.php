@@ -31,9 +31,10 @@ class AuthController extends AbstractController
             throw new BadCredentialsException('Invalid credentials');
         }
 
+        $userId = $user->id;
+                        
         // Generate a JWT token
-        $token = $this->jwtTokenManager->create($user);
-
+        $token = $this->jwtTokenManager->create($user, ['user_id' => $userId]);
         // Return the token as JSON
         return $this->json(['token' => $token]);
     }
