@@ -20,6 +20,12 @@ const Formulaire: React.FC = () => {
   const [loginResponse, setLoginResponse] = useState<string | null>(null);
 
   useEffect(() => {
+    const authToken = localStorage.getItem('authToken');
+
+    if (authToken) {
+      console.log('L\'utilisateur est déjà connecté.');
+      window.location.href = '/';
+    }
   }, []);
 
   const handleRegistrationSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -65,11 +71,12 @@ const Formulaire: React.FC = () => {
 
       setLoginResponse('Connexion réussie !');
 
-
       setLoginData({
         email: '',
         password: '',
       });
+
+      window.location.href = '/';
     } catch (error) {
       console.error(error);
       setLoginResponse('Une erreur s\'est produite lors de la connexion. Veuillez réessayer.');
@@ -89,7 +96,8 @@ const Formulaire: React.FC = () => {
   return (
     <div className="h-screen">
       <Header />
-        <div className='flex flex-col md:flex-row justify-center items-center min-h-screen bg-gray-100 gap-10 w-full h-full pt-14 pb-1 overflow-y-auto '>
+      <div className='h-full overflow-x-scroll'>
+        <div className='flex flex-col md:flex-row justify-center items-center min-h-screen bg-gray-100 gap-10 w-full pt-2'>
           <form onSubmit={handleLoginSubmit} className=" p-8 md:w-1/2 max-w-xl w-full">
             <h1 className="text-3xl mb-4 flex flex-row gap-2 text-black" >ALREADY <p className='font-bold text-black'>REGISTERED</p> ?</h1>
             <h2 className="text-xl mb-4 text-black">Connect now !</h2>
@@ -113,7 +121,7 @@ const Formulaire: React.FC = () => {
                 className="w-full p-3 border border-gray-300 rounded text-black"
               />
             </div>
-            <button type="submit" className="w-full bg-black text-white p-3 rounded text-xl cursor-pointer transition duration-300 hover:bg-gray-700">
+            <button type="submit" className=" w-full bg-black text-white p-3 rounded text-xl cursor-pointer transition duration-300 hover:bg-gray-700">
               Connect
             </button>
             {loginResponse && <p className="text-green-500 mt-4">{loginResponse}</p>}
@@ -157,7 +165,9 @@ const Formulaire: React.FC = () => {
             </button>
             {registrationResponse && <p className="text-green-500 mt-4">{registrationResponse}</p>}
           </form>
+        </div>
       </div>
+
       <Footer />
     </div>
 
