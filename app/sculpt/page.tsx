@@ -24,8 +24,12 @@ const PageSculpt: React.FC = () => {
       <main className="flex min-h-screen flex-col items-center justify-between">
           <Header></Header>
           <Sculpt toolSize={toolSize}></Sculpt>
-          <BottonRefresh></BottonRefresh>
-          <Outils handleClick={handleClick}></Outils>
+          <div className='fixed top-[3.5rem] left-4'>
+            <BottonRefresh></BottonRefresh>
+          </div>
+          <div className='fixed left-10 top-1/2'>
+            <Outils handleClick={handleClick}></Outils>
+          </div>
           <Botton></Botton>
           <Footer></Footer>
       </main>

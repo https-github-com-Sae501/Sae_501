@@ -23,6 +23,9 @@ const Header = () => {
       <div className="flex justify-between items-center p-2 px-3 bg-black text-white w-full">
         <div className=" flex flex-row gap-4">
           <div className="text-sm font-semibold">
+            <Link href="/home">Home</Link>
+          </div>
+          <div className="text-sm font-semibold">
             <Link href="/">Library</Link>
           </div>
           <div className="text-sm font-semibold">

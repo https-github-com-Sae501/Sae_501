@@ -46,7 +46,7 @@ const Popup: React.FC = () => {
   
 
   return (
-    <div>
+    <div className='text-black'>
       <button onClick={openPopup} className="fixed bottom-[3rem] right-4 bg-black text-white px-[2rem] py-2 rounded-md cursor-pointer">
         Save
       </button>
@@ -59,7 +59,7 @@ const Popup: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Title"
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-2 border border-gray-300 rounded text-black"
                   value={localStorageName}
                   onChange={handleNameChange}
                 />

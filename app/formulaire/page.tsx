@@ -94,7 +94,7 @@ const Formulaire: React.FC = () => {
   };
 
   return (
-    <div className="h-screen">
+    <div className="h-screen text-black">
       <Header />
       <div className='h-full overflow-x-scroll'>
         <div className='flex flex-col md:flex-row justify-center items-center min-h-screen bg-gray-100 gap-10 w-full pt-2'>

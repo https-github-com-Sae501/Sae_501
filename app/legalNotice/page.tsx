@@ -4,7 +4,7 @@ import Footer from '../components/footer';
 
 const LegalNotice = () => {
   return (
-    <div className='h-screen bg-gray-100'>
+    <div className='h-screen bg-gray-100 text-black'>
     <Header />
     <div className='p-4 pt-[3rem] bg-white h-full text-black text-center flex flex-col justify-center'>
         <h2 className='text-3xl font-semibold mb-4'>Legal Notice</h2>

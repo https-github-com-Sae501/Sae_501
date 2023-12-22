@@ -8,7 +8,7 @@ interface OutilsProps {
 const Outils: React.FC<OutilsProps> = ({ handleClick }) => {
 
   return (
-    <div className="fixed left-10 top-1/2 transform -translate-y-1/2  border-2 border-black rounded-lg w-max h-max">
+    <div className=" border-2 border-black rounded-lg w-max h-max">
       <div className=" flex flex-col gap-10 p-3">
         
         <div>
