@@ -23,7 +23,7 @@ const Home = () => {
           <div className='flex justify-center p-4'>
             <Image src="/chooseSize.PNG" alt="chooseSize" width={750} height={750} className='' />
           </div>
-          <p> You can then carve using various tools, such as the tungsten engraver, which breaks one cube, the steel engraver, which breaks two cubes, and the soft stone chisel, which breaks four cubes. There's also a rewind and restart button for starting a new sculpture.</p>
+          <p> You can then carve using various tools, such as the tungsten engraver, which breaks one cube, the steel engraver, which breaks two cubes, and the soft stone chisel, which breaks four cubes. There&apos;s also a rewind and restart button for starting a new sculpture.</p>
           <div className='flex justify-center items-center gap-6 p-4'>
           <Outils handleClick={handleClick}></Outils>
           <button className=" bg-black text-white px-3  py-[0.5rem] rounded-md cursor-pointer">
@@ -49,7 +49,8 @@ const Home = () => {
             <Image src="/libraryPage.PNG" alt="chooseSize" width={1000} height={750} className='' />
           </div>
 
-          <h2 className='text-3xl font-bold p-2 pt-4 text-black text-center'>It's your turn to play</h2>
+          <h2 className='text-3xl font-bold p-2 pt-4 text-black text-center'>It&apos;s your turn to play</h2>
+
           <div className='flex items-center justify-center p-4'>
             <Link href='./sculpt'><BottonCreate ></BottonCreate></Link>
           </div>

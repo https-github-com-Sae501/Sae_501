@@ -66,7 +66,7 @@ const Popup: React.FC = () => {
             </div>
             
             <div className="mt-4 space-x-2 flex justify-end">
-                    <a href='/' onClick={handleSave} className="bg-black text-white px-3 py-1 rounded cursor-pointer w-1/3 flex justify-center">
+                    <a href='/library' onClick={handleSave} className="bg-black text-white px-3 py-1 rounded cursor-pointer w-1/3 flex justify-center">
                     Save
                     </a>
               <a onClick={closePopup} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-pointer w-1/3 flex justify-center">
