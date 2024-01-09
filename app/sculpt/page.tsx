@@ -27,7 +27,7 @@ const PageSculpt: React.FC = () => {
           <div className='fixed top-[3.5rem] left-4'>
             <BottonRefresh></BottonRefresh>
           </div>
-          <div className='fixed left-10 top-1/2'>
+          <div className='fixed left-10 top-1/2 transform -translate-y-1/2'>
             <Outils handleClick={handleClick}></Outils>
           </div>
           <Botton></Botton>
