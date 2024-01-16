@@ -38,7 +38,7 @@ const Formulaire: React.FC = () => {
 
     try {
       const response = await Axios.post(
-        'http://127.0.0.1:8000/api/users',
+        'https://127.0.0.1:8000/api/users',
         registrationData,
         {
           headers: {
@@ -64,7 +64,7 @@ const Formulaire: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await Axios.post('http://127.0.0.1:8000/authentication_token', loginData);
+      const response = await Axios.post('https://127.0.0.1:8000/authentication_token', loginData);
       const token = response.data.token;
 
       localStorage.setItem('authToken', token);

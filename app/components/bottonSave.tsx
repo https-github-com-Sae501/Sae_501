@@ -45,6 +45,21 @@ const Popup: React.FC = () => {
     setLocalStorageName(event.target.value);
   };
 
+  type Cube = {
+    position: { x: number; y: number; z: number };
+    s: number;
+  };
+
+  const areCubesEqual = (cube1: Cube, cube2: Cube): boolean => {
+    // Comparaison des propriétés position (x, y, z), s et size
+    return (
+      cube1.position.x === cube2.position.x &&
+      cube1.position.y === cube2.position.y &&
+      cube1.position.z === cube2.position.z &&
+      cube1.s === cube2.s // Comparaison de la propriété 's'
+    );
+  };
+
   const handleSave = async () => {
     try {
         // Récupérer le token utilisateur depuis le stockage local
@@ -54,7 +69,7 @@ const Popup: React.FC = () => {
         // Vérifier si le token est manquant
         if (!authToken) {
             console.error('Token utilisateur manquant.');
-            alert('Token utilisateur manquant. Veuillez vous reconnecter.');
+            alert('Impossible de sauvagarder la sculpture. Veuillez vous connecter.');
             return;
         }
 
@@ -74,21 +89,30 @@ const Popup: React.FC = () => {
         const existingData = jsonString ? JSON.parse(jsonString) : [];
         const historiqueCubes = JSON.parse(localStorage.getItem('historiqueCubes') || '[]');
 
-        // Fusionner les données
-        const mergedData = [...existingData, ...historiqueCubes];
-
+        // Fusionner les données sans doublons
+        const mergedDataWithoutDuplicates = [
+          ...existingData,
+          ...historiqueCubes.filter((newCube: Cube) =>
+            !existingData.some((existingCube: Cube) =>
+              existingCube.position.x === newCube.position.x &&
+              existingCube.position.y === newCube.position.y &&
+              existingCube.position.z === newCube.position.z &&
+              existingCube.s === newCube.s
+            )
+          )
+        ];
         // Afficher les données du cube à envoyer
         console.log('Données du cube à envoyer:', {
-            cubeData: mergedData,
+            cubeData: mergedDataWithoutDuplicates,
             name: localStorageName,
             user: decodedToken.id,
         });
 
         // Envoyer les données au serveur
         const response = await Axios.post(
-            'http://127.0.0.1:8000/api/cubes',
+            'https://127.0.0.1:8000/api/cubes',
             {
-                cubeData: mergedData,
+                cubeData: mergedDataWithoutDuplicates,
                 name: localStorageName,
                 user: `/api/users/${decodedToken.id}`,
             },

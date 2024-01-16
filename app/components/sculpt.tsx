@@ -12,6 +12,8 @@ interface SculptProps {
   toolSize?: number;
 }
 
+
+
 const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
   // const containerRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState<number>(0);
@@ -52,6 +54,11 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
     }
   };
 
+  window.addEventListener('beforeunload', () => {
+    // Vider l'historique des cubes dans le local storage
+    localStorage.removeItem('historiqueCubes');
+});
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const main = function () {
@@ -62,7 +69,10 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
         const near = 0.1;
         const far = 1000;
         const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+        console.log('Avant de définir la position de la caméra :', camera.position);
         camera.position.set(-cellSize * 0.8, cellSize * 1.3, -cellSize * 0.8);
+        console.log('Après avoir défini la position de la caméra :', camera.position);
+        camera.lookAt(0, 0, 0);
         const controls = new OrbitControls(camera, canvas);
         controls.target.set(cellSize / 2, cellSize / 3, cellSize / 2);
         controls.mouseButtons = {
@@ -94,36 +104,145 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
         const cubes: THREE.Mesh[] = [];
         const deletedCubes: THREE.Mesh[] = [];
 
-        // Code de création des cubes
-        for (let y = 0; y < cellSize; ++y) {
-          for (let z = 0; z < cellSize; ++z) {
-            for (let x = 0; x < cellSize; ++x) {
-              const offset = y * cellSize * cellSize + z * cellSize + x;
-              cell[offset] = 1;
-            }
-          }
-        }
+        
+       
 
-        for (let y = 0; y < cellSize; ++y) {
-          for (let z = 0; z < cellSize; ++z) {
-            for (let x = 0; x < cellSize; ++x) {
-              const offset = y * cellSize * cellSize + z * cellSize + x;
-              const block = cell[offset];
-              if (block) {
-                const mesh = new THREE.Mesh(geometry, material);
-                mesh.position.set(x, y, z);
-                scene.add(mesh);
-                cubes.push(mesh);
+        //------------- Ouvrir Sculpture --------------------------
+
+        const loadHistoriqueCubesFromDatabase = async () => {
+
+          
+
+          try {
+            
+            // Récupérer le nom du cube que vous avez sélectionné depuis l'URL
+            const selectedCubeName = new URLSearchParams(window.location.search).get('name');
+        
+            // Si un nom est présent dans l'URL, récupérer les cubes existants
+            if (selectedCubeName) {
+              const response = await axios.get(`https://127.0.0.1:8000/api/cubes`);
+        
+              if (response.status !== 200) {
+                throw new Error(`Erreur lors du chargement des cubes. Statut : ${response.status}`);
+              }
+        
+              const cubesData = response.data['hydra:member'];
+              console.log('Cubes Data:', cubesData);
+        
+              if (!Array.isArray(cubesData)) {
+                throw new Error('cubesData n\'est pas un tableau');
+              }
+        
+              // Vous devrez adapter cette partie en fonction de la structure réelle de vos données
+              const combinedHistoriqueCubes = cubesData;
+        
+              const tailles = combinedHistoriqueCubes.length > 0 ? combinedHistoriqueCubes[0].s : null;
+              setCellSize(tailles);
+              setShowOptions(false);
+        
+              // Nettoyer la scène des cubes existants
+              cubes.forEach(cube => scene.remove(cube));
+              cubes.length = 0;
+        
+              // Filtrer les cubes en fonction du nom sélectionné
+              const selectedCubesData = combinedHistoriqueCubes.filter(cubeInfo => cubeInfo.name === selectedCubeName);
+        
+              console.log('Selected Cubes Data:', selectedCubesData);
+        
+              if (!Array.isArray(selectedCubesData) || selectedCubesData.length === 0) {
+                console.error(`Aucun cube trouvé avec le nom "${selectedCubeName}"`);
+        
+                // Si aucun cube n'est trouvé avec le nom, créer un nouveau cube avec le raycaster
+                createNewCube();
+                return;
+              }
+        
+              // Utiliser uniquement le premier cube trouvé (vous pouvez ajuster cela selon vos besoins)
+              const selectedCubeData = selectedCubesData[0];
+        
+              // Vous pouvez maintenant utiliser selectedCubeData dans la suite de votre logique
+              console.log('Selected Cube Data:', selectedCubeData);
+        
+              selectedCubeData.cubeData.forEach(async (positionData: any) => {
+                try {
+                    if (positionData && positionData.position !== undefined) {
+                        const { x, y, z } = positionData.position;
+                        const { s } = positionData;
+
+                        if (x !== undefined && y !== undefined && z !== undefined) {
+                            console.log('Valeurs récupérées de la base de données :', { x, y, z, s });
+
+                            const historiqueCubes = JSON.parse(localStorage.getItem('historiqueCubes') || '[]');
+                            const coordAlreadyExists = historiqueCubes.some((coord: any) => (
+                                coord.x === x && coord.y === y && coord.z === z && coord.s === s
+                            ));
+
+                            if (!coordAlreadyExists) {
+                                historiqueCubes.push({ x, y, z, s });
+                                localStorage.setItem('historiqueCubes', JSON.stringify(historiqueCubes));
+
+                                // Créez le cube constitué de petits cubes
+                                await createNewCube();
+
+                                console.log('Après la création du cube - Position de la caméra :', camera.position);
+                            } else {
+                                console.log('Coordonnées déjà présentes dans l\'historique. Aucune action requise.');
+                            }
+                        } else {
+                            console.error('Erreur lors de la création du cube: Les coordonnées (x, y, z) ne sont pas définies correctement.');
+                        }
+                    } else {
+                        console.error('Erreur lors de la création du cube: La propriété positionData.position est indéfinie.');
+                    }
+                } catch (error) {
+                    console.error('Erreur lors de la création du cube:', error);
+                }
+            });
+        } else {
+            // Aucun nom de cube dans l'URL, créer un nouveau cube
+            await createNewCube();
+        }
+    } catch (error) {
+        console.error('Erreur lors du chargement des cubes depuis la base de données :', error);
+    }
+};
+
+    
+        
+        const createNewCube = () => {
+          try {
+
+            for (let y = 0; y < cellSize; ++y) {
+              for (let z = 0; z < cellSize; ++z) {
+                for (let x = 0; x < cellSize; ++x) {
+                  const offset = y * cellSize * cellSize + z * cellSize + x;
+                  cell[offset] = 1;
+                }
               }
             }
-          }
-        }
+    
+            for (let y = 0; y < cellSize; ++y) {
+              for (let z = 0; z < cellSize; ++z) {
+                for (let x = 0; x < cellSize; ++x) {
+                  const offset = y * cellSize * cellSize + z * cellSize + x;
+                  const block = cell[offset];
+                  if (block) {
+                    const mesh = new THREE.Mesh(geometry, material);
+                    mesh.position.set(x, y, z);
+                    scene.add(mesh);
+                    cubes.push(mesh);
+                  }
+                }
+              }
+            }
+
+            console.log('Position de la caméra :', camera.position);
 
 
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
 
-        //------------- Fonction au click --------------------------
+             //------------- Fonction au click --------------------------
 
         const onMouseClick: EventListener = function (event: Event) {
           const mouseEvent = event as MouseEvent; // Convertir l'événement en MouseEvent
@@ -195,45 +314,13 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
           console.error("L'élément avec l'ID 'undoButton' n'a pas été trouvé dans le document.");
         }
         const historiqueCubes = [];
-
-        //------------- Ouvrir Sculpture --------------------------
-
-        const loadHistoriqueCubesFromDatabase = async () => {
-          try {
-            // Effectuer une requête GET vers votre API
-            const response = await axios.get('http://127.0.0.1:8000/api/cubes');
-
-            if (response.status !== 200) {
-              throw new Error(`Error loading cubes. Status: ${response.status}`);
-            }
-
-            // Extraire les données réelles des cubes
-            const cubesData = response.data['hydra:member'];
-
-            if (!Array.isArray(cubesData)) {
-              throw new Error('cubesData is not an array');
-    }
-            // Vous devrez adapter cette partie en fonction de la structure réelle de vos données
-            const combinedHistoriqueCubes = cubesData;
-        
-            const tailles = combinedHistoriqueCubes.length > 0 ? combinedHistoriqueCubes[0].s : null;
-            setCellSize(tailles);
-            setShowOptions(false);
-        
-            combinedHistoriqueCubes.forEach(cubeInfo => {
-              cubes.forEach((cube, index) => {
-                // Assurez-vous que cube.position.equals et cubeInfo.position sont définis correctement
-                if (cube.position.equals(cubeInfo.position)) {
-                  scene.remove(cube);
-                  cubes.splice(index, 1);
-                }
-              });
-            });
+            console.log('Création d\'un cube...');
           } catch (error) {
-            console.error('Error loading cubes from the database:', error);
+            console.error('Erreur lors de la création du nouveau cube :', error);
           }
-        };
+      };
         
+        // Appeler la fonction pour charger les cubes depuis la base de données
         loadHistoriqueCubesFromDatabase();
 
 
