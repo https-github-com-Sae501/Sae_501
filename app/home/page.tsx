@@ -43,7 +43,7 @@ const Home = () => {
             Save
             </p>
           </div>
-          <p> If it's not finished, you can come back and modify it in your library.
+          <p> If it&apos;s not finished, you can come back and modify it in your library.
           </p>
           <div className='flex justify-center p-4'>
             <Image src="/libraryPage.PNG" alt="chooseSize" width={1000} height={750} className='' />
