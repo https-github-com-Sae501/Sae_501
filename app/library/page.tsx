@@ -20,7 +20,7 @@ const LibraryPage = () => {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
 
-        if (key !== 'ally-supports-cache' && key !== 'historiqueCubes') {
+        if (key !== 'ally-supports-cache' && key !== 'historiqueCubes' && key !== 'authToken') {
           keys.push(key);
         }
       }
