@@ -38,7 +38,7 @@ const Formulaire: React.FC = () => {
 
     try {
       const response = await Axios.post(
-        'https://127.0.0.1:8000/api/users',
+        'https://mmi21-01.mmi-limoges.fr/api/users',
         registrationData,
         {
           headers: {
@@ -64,7 +64,7 @@ const Formulaire: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await Axios.post('https://127.0.0.1:8000/authentication_token', loginData);
+      const response = await Axios.post('https://mmi21-01.mmi-limoges.fr/authentication_token', loginData);
       const token = response.data.token;
 
       localStorage.setItem('authToken', token);
