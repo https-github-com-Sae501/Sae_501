@@ -30,7 +30,7 @@ const LibraryPage = () => {
   const getFullCubeData = async (cubeId: number) => {
     try {
       localStorage.removeItem('historiqueCubes');
-      const response = await Axios.get(`http://127.0.0.1:8000/api/cubes/${cubeId}`);
+      const response = await Axios.get(`https://mmi21-01.mmi-limoges.fr/api/cubes/${cubeId}`);
       const fullCubeData = response.data;
       console.log('Full Cube Data:', fullCubeData);
       // Utilisez les données complètes du cube comme nécessaire
@@ -83,26 +83,35 @@ const LibraryPage = () => {
   }, [loggedInUserId]);  // Assurez-vous d'inclure toutes les dépendances nécessaires
 
   return (
-    <div className="bg-white h-screen w-screen color-foreground">
+    <div className="bg-zinc-900 h-screen w-screen color-foreground flex flex-col">
       <Header />
-      <h1 className="text-black text-4xl font-bold p-4 pt-12">Library</h1>
-      <ul className='px-8 grid grid-cols-6 max-w-screen max-h-full gap-3'>
-        {Array.isArray(cubes) && cubes.length > 0 ? (
-          cubes.map((cube, index) => (
-            <li className='text-black' key={index} onClick={() => getFullCubeData(cube.id)}>
-              <Link href={`/sculpt?name=${cube.name}`}>
-                <div className='flex flex-col items-center'>
-                  <img src="../sculptureBase.PNG" alt="SculptureDeBase" width={250} height={250} />
-                  <p>{cube.name}</p>
-                </div>
-              </Link>
-            </li>
-          ))
-        ) : (
-          <p className='text-black'>No cube available</p>
-        )}
-      </ul>
-      <Link href='./sculpt'><BottonCreate></BottonCreate></Link>
+      <h1 className="text-white text-4xl font-bold p-4 pt-12">Library</h1>
+  
+      <div className="flex-grow flex items-center justify-center">
+        <ul className=' flex justify-center items-center px-8 place-items-center grid-cols-6 max-w-screen max-h-full gap-3'>
+          {Array.isArray(cubes) && cubes.length > 0 ? (
+            cubes.map((cube, index) => (
+              <li className='text-white' key={index} onClick={() => getFullCubeData(cube.id)}>
+                <Link href={`/sculpt?name=${cube.name}`}>
+                  <div className='flex flex-col items-center'>
+                    <img src="../sculptureBase.PNG" alt="SculptureDeBase" width={250} height={250} />
+                    <p>{cube.name}</p>
+                  </div>
+                </Link>
+              </li>
+            ))
+          ) : (
+            <div className="flex flex-col items-center justify-center w-full h-full">
+              <p className='text-white text-4xl font-bold'>No cube available...</p>
+            </div>
+          )}
+        </ul>
+      </div>
+  
+      <div className='fixed bottom-4 right-4 mb-10'>
+        <Link href='./sculpt'><BottonCreate ></BottonCreate></Link>
+      </div>
+  
       <Footer />
     </div>
   );

@@ -81,7 +81,7 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
         }
 
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color('lightblue');
+        scene.background = new THREE.Color('#18181b');
 
         const addLight = function (x: number, y: number, z: number) {
           const color = 0xFFFFFF;
@@ -451,24 +451,24 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
   return (
     <div className="w-full h-full overflow-hidden relative ">
       {showOptions && (
-        <div className="text-black backdrop-blur-md absolute inset-0 flex items-center justify-center">
+        <div className="text-white backdrop-blur-md absolute inset-0 flex items-center justify-center">
           <div className="p-4 w-96 text-2xl text-center font-semibold">
             Choose the size of the cube:
             <div
               onClick={() => handleOptionClick(4)}
-              className={`cursor-pointer mt-4 ${cellSize === 4 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
+              className={`cursor-pointer mt-4 text-white ${cellSize === 4 ? 'bg-lightblue' : 'bg-black'} p-4 border border-black rounded-md text-2xl text-center`}
             >
               Small
             </div>
             <div
               onClick={() => handleOptionClick(8)}
-              className={`cursor-pointer mt-4 ${cellSize === 8 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
+              className={`cursor-pointer mt-4 text-white ${cellSize === 8 ? 'bg-lightblue' : 'bg-black'} p-4 border border-black rounded-md text-2xl text-center`}
             >
               Medium
             </div>
             <div
               onClick={() => handleOptionClick(16)}
-              className={`cursor-pointer mt-4 ${cellSize === 16 ? 'bg-lightblue' : 'bg-white'} p-4 border border-black rounded-md text-2xl text-center`}
+              className={`cursor-pointer mt-4 text-white ${cellSize === 16 ? 'bg-lightblue' : 'bg-black'} p-4 border border-black rounded-md text-2xl text-center`}
             >
               Large
             </div>

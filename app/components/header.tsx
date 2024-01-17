@@ -28,14 +28,17 @@ const Header = () => {
     <header className="fixed top-0 w-full z-50">
       <div className="flex justify-between items-center p-2 px-3 bg-black text-white w-full">
         <div className=" flex flex-row gap-4">
-          <div className="text-sm">
-          <Link href="/" onClick={handleLibraryClick}>
-              Library
-            </Link>
-          </div>
-          <div className="text-sm">
-            <Link href="./sculpt">Sculpt</Link>
-          </div>
+          <div className="text-sm font-semibold">
+              <Link href="./library">Library</Link>
+            </div>
+            <div className="text-sm">
+            <Link href="/" onClick={handleLibraryClick}>
+                Home
+              </Link>
+            </div>
+            <div className="text-sm">
+              <Link href="./sculpt">Sculpt</Link>
+            </div>
         </div>
         <div className="flex text-sm gap-4">
           {authenticated ? (
