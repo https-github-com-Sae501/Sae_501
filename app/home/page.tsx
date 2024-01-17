@@ -4,15 +4,24 @@ import Header from '../components/header';
 import Footer from '../components/footer';
 import Image from 'next/image';
 import BottonCreate from '../components/bottonCreate';
-import Botton from '../components/bottonSave'
-import BottonRefresh from '../components/bottonRefresh'
-import Outils from '../components/outils'
 import Link from 'next/link';
+import { useState, useEffect } from "react";
 
 const Home = () => {
-  const handleClick = (info: number) => {
+  const [authenticated, setAuthenticated] = useState(false);
 
-  };
+  useEffect(() => {
+    // Check if the user is authenticated
+    const authToken = localStorage.getItem("authToken");
+    setAuthenticated(!!authToken);
+  }, []);
+
+  const handleLogout = () => {
+    // Perform logout actions
+    localStorage.removeItem("authToken");
+    setAuthenticated(false);
+    console.log("Utilisateur déconnecté.");
+  }
   return (
     <div className="bg-zinc-900 h-screen w-screen color-foreground text-white">
       <Header />
@@ -20,6 +29,21 @@ const Home = () => {
         <h1 className='text-4xl font-bold p-2 pt-12 pb-6 text-white'>Sculpt</h1>
 
         <div className='pl-3 pb-3 text-xl text-white'>
+          <div className='flex flex-row justify-around items-center'>
+              <p className='w-1/2 p-2 text-center'>Before you do anything else, feel free to create an account and log in to find all your sculptures on any device. </p>
+              <div className="flex text-sm gap-4">
+                {authenticated ? (
+                  <p className="font-semibold cursor-pointer select-none" onClick={handleLogout}>
+                    Se Déconnecter
+                  </p>
+                ) : (
+                  <Link href="./formulaire">
+                    <p className="font-semibold">Se Connecter</p>
+                  </Link>
+                )}
+              </div>
+          </div>
+
           <div className='flex flex-row justify-around items-center'>
             <p className='w-1/2 p-2 text-center'>Sculpt is a stone carving game. The principle is simple: you have 3 cube sizes to choose from, small, medium and large.</p>
             <div className='flex justify-center p-4 w-1/2'>

@@ -108,7 +108,7 @@ const Formulaire: React.FC = () => {
                 name="email"
                 value={loginData.email}
                 onChange={handleLoginInputChange}
-                className="w-full p-3 border border-gray-300 rounded text-white"
+                className="w-full p-3 border border-gray-300 rounded text-black"
               />
             </div>
             <div className="mb-6">
@@ -118,7 +118,7 @@ const Formulaire: React.FC = () => {
                 name="password"
                 value={loginData.password}
                 onChange={handleLoginInputChange}
-                className="w-full p-3 border border-gray-300 rounded text-white"
+                className="w-full p-3 border border-gray-300 rounded text-black"
               />
             </div>
             <button type="submit" className=" w-full bg-black text-white p-3 rounded text-xl cursor-pointer transition duration-300 hover:bg-gray-700">
@@ -137,7 +137,7 @@ const Formulaire: React.FC = () => {
                 name="email"
                 value={registrationData.email}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded text-white"
+                className="w-full p-3 border border-gray-300 rounded text-black"
               />
             </div>
             <div className="mb-6">
@@ -147,7 +147,7 @@ const Formulaire: React.FC = () => {
                 name="plainPassword"
                 value={registrationData.plainPassword}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded text-white"
+                className="w-full p-3 border border-gray-300 rounded text-black"
               />
             </div>
             <div className="mb-6">
