@@ -29,16 +29,16 @@ const LibraryPage = () => {
   }, []);
 
   return (
-    <div className="bg-white h-screen w-screen color-foreground text-black">
+    <div className="bg-zinc-900 h-screen w-screen color-foreground text-white">
       <Header />
-      <h1 className="text-4xl font-bold p-4 pt-12 text-black">Library</h1>
+      <h1 className="text-4xl font-bold p-4 pt-12 text-white">Library</h1>
       <ul className='px-8 grid grid-cols-3  md:grid-cols-4 lg:grid-cols-6 max-w-screen max-h-full gap-3'>
         {localStorageKeys.map((key, index) => (
           <li key={index}>
             <Link href={`/sculpt?name=${key}`}>
               <div className='flex flex-col items-center'>
                 <Image src="/sculptureBase.PNG" alt="SculptureDeBase" width={250} height={250}/>
-                <p className='text-black'>{key}</p>
+                <p className='text-white'>{key}</p>
               </div>
             
             </Link>

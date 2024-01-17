@@ -7,7 +7,7 @@ import Sculpt from '../components/sculpt'
 import Footer from '../components/footer'
 import Botton from '../components/bottonSave'
 import BottonRefresh from '../components/bottonRefresh'
-import Outils from '../components/outils'
+// import Outils from '../components/outils'
 
 const PageSculpt: React.FC = () => {
     const [toolSize, settoolSize] = useState<number>(1);
@@ -28,7 +28,7 @@ const PageSculpt: React.FC = () => {
             <BottonRefresh></BottonRefresh>
           </div>
           <div className='fixed left-10 top-1/2 transform -translate-y-1/2'>
-            <Outils handleClick={handleClick}></Outils>
+            {/* <Outils handleClick={handleClick}></Outils> */}
           </div>
           <Botton></Botton>
           <Footer></Footer>

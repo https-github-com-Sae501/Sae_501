@@ -94,31 +94,31 @@ const Formulaire: React.FC = () => {
   };
 
   return (
-    <div className="h-screen text-black">
+    <div className="h-screen text-white">
       <Header />
       <div className='h-full overflow-x-scroll'>
-        <div className='flex flex-col md:flex-row justify-center items-center min-h-screen bg-gray-100 gap-10 w-full pt-2'>
+        <div className='flex flex-col md:flex-row justify-center items-center min-h-screen bg-zinc-900 gap-10 w-full pt-2'>
           <form onSubmit={handleLoginSubmit} className=" p-8 md:w-1/2 max-w-xl w-full">
-            <h1 className="text-3xl mb-4 flex flex-row gap-2 text-black" >ALREADY <p className='font-bold text-black'>REGISTERED</p> ?</h1>
-            <h2 className="text-xl mb-4 text-black">Connect now !</h2>
+            <h1 className="text-3xl mb-4 flex flex-row gap-2 text-white" >ALREADY <p className='font-bold text-white'>REGISTERED</p> ?</h1>
+            <h2 className="text-xl mb-4 text-white">Connect now !</h2>
             <div className="mb-6">
-              <label className="block font-bold text-black">Mail:</label>
+              <label className="block font-bold text-white">Mail:</label>
               <input
                 type="email"
                 name="email"
                 value={loginData.email}
                 onChange={handleLoginInputChange}
-                className="w-full p-3 border border-gray-300 rounded text-black"
+                className="w-full p-3 border border-gray-300 rounded text-white"
               />
             </div>
             <div className="mb-6">
-              <label className="block font-bold text-black">Password:</label>
+              <label className="block font-bold text-white">Password:</label>
               <input
                 type="password"
                 name="password"
                 value={loginData.password}
                 onChange={handleLoginInputChange}
-                className="w-full p-3 border border-gray-300 rounded text-black"
+                className="w-full p-3 border border-gray-300 rounded text-white"
               />
             </div>
             <button type="submit" className=" w-full bg-black text-white p-3 rounded text-xl cursor-pointer transition duration-300 hover:bg-gray-700">
@@ -126,32 +126,32 @@ const Formulaire: React.FC = () => {
             </button>
             {loginResponse && <p className="text-green-500 mt-4">{loginResponse}</p>}
           </form>
-          <div className="hidden lg:block w-px bg-gray-700 h-96"></div>
+          <div className="hidden lg:block w-px bg-gray-300 h-96"></div>
           <form onSubmit={handleRegistrationSubmit} className="p-8 md:w-1/2 max-w-xl w-full">
-            <h1 className="text-3xl mb-4 text-black flex  flex-row gap-2"> <p className='font-bold text-black'>FIRST</p> VISIT ?</h1>
-            <h2 className="text-xl mb-4 text-black">Register now !</h2>
+            <h1 className="text-3xl mb-4 text-white flex  flex-row gap-2"> <p className='font-bold text-white'>FIRST</p> VISIT ?</h1>
+            <h2 className="text-xl mb-4 text-white">Register now !</h2>
             <div className="mb-6">
-              <label className="block font-bold text-black">Mail:</label>
+              <label className="block font-bold text-white">Mail:</label>
               <input
                 type="email"
                 name="email"
                 value={registrationData.email}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded text-black"
+                className="w-full p-3 border border-gray-300 rounded text-white"
               />
             </div>
             <div className="mb-6">
-              <label className="block font-bold text-black">Password:</label>
+              <label className="block font-bold text-white">Password:</label>
               <input
                 type="password"
                 name="plainPassword"
                 value={registrationData.plainPassword}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded text-black"
+                className="w-full p-3 border border-gray-300 rounded text-white"
               />
             </div>
             <div className="mb-6">
-              <label className="block font-bold text-black">Confirm Password:</label>
+              <label className="block font-bold text-white">Confirm Password:</label>
               <input
                 type="password"
                 name="confirmPassword"
