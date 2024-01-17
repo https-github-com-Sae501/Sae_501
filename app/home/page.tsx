@@ -31,17 +31,21 @@ const Home = () => {
         <div className='pl-3 pb-3 text-xl text-white'>
           <div className='flex flex-row justify-around items-center'>
               <p className='w-1/2 p-2 text-center'>Before you do anything else, feel free to create an account and log in to find all your sculptures on any device. </p>
-              <div className="flex text-sm gap-4">
-                {authenticated ? (
-                  <p className="font-semibold cursor-pointer select-none" onClick={handleLogout}>
-                    Se Déconnecter
-                  </p>
-                ) : (
-                  <Link href="./formulaire">
-                    <p className="font-semibold">Se Connecter</p>
-                  </Link>
-                )}
+              <div className='w-1/2 flex justify-center items-center'>
+                  <div className="flex text-sm gap-4">
+                  {authenticated ? (
+                    <p className="font-semibold bg-black text-white px-3 py-1 rounded cursor-pointer h-11 flex justify-center items-center select-none" onClick={handleLogout}>
+                      Se Déconnecter
+                    </p>
+                  ) : (
+                    <Link href="./formulaire">
+                      <p className="font-semibold bg-black text-white px-3 py-1 rounded cursor-pointer h-11 flex justify-center items-center">Se Connecter</p>
+                    </Link>
+                  )}
+                </div>
               </div>
+              
+
           </div>
 
           <div className='flex flex-row justify-around items-center'>
