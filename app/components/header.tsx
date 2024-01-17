@@ -32,7 +32,7 @@ const Header = () => {
               <Link href="./library">Library</Link>
             </div>
             <div className="text-sm">
-            <Link href="/" onClick={handleLibraryClick}>
+            <Link href="./home" onClick={handleLibraryClick}>
                 Home
               </Link>
             </div>
