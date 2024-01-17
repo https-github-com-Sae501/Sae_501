@@ -19,12 +19,19 @@ const Header = () => {
     window.location.reload();
   };
 
+  const handleLibraryClick = () => {
+    // Ajouter le code pour vider l'historique des cubes du localStorage ici
+    localStorage.removeItem("historiqueCubes");
+  };
+
   return (
     <header className="fixed top-0 w-full z-50">
       <div className="flex justify-between items-center p-2 px-3 bg-black text-white w-full">
         <div className=" flex flex-row gap-4">
           <div className="text-sm">
-            <Link href="/">Library</Link>
+          <Link href="/" onClick={handleLibraryClick}>
+              Library
+            </Link>
           </div>
           <div className="text-sm">
             <Link href="./sculpt">Sculpt</Link>

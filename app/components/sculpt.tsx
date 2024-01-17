@@ -123,12 +123,13 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
         const createNewCube = () => {
           try {
             console.log('Création d\'un nouveau cube...');
-        
+            const historiqueCubes = JSON.parse(localStorage.getItem('historiqueCubes') || '[]') || [];            
+
             // Filtrer les éléments invalides de historiqueCubes
-            const validCoords = historiqueCubes.filter((coord) =>
+            const validCoords = historiqueCubes.filter((coord:any) =>
               isObjectWithCoords(coord)
             );
-        
+            console.log(historiqueCubes)
             console.log('Contenu de historiqueCubes après le filtrage :', validCoords);
         
             // Remplir la cellule de cubes
@@ -139,7 +140,7 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
                   cell[offset] = 1;
         
                   // Vérifier si les coordonnées existent dans historiqueCubes (après le filtrage)
-                  const isCubeInHistory = validCoords.some((coord) => {
+                  const isCubeInHistory = validCoords.some((coord:any) => {
                     if (isObjectWithCoords(coord)) {
                       console.log('Coord dans historiqueCubes :', coord);
                       return areCoordsEqual(coord, { x, y, z });
@@ -248,79 +249,86 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
           }
       };
 
-        const loadHistoriqueCubesFromDatabase = async () => {
-
-          try {
-            const selectedCubeName = new URLSearchParams(window.location.search).get('name');
-            
-            if (selectedCubeName) {
-                const response = await axios.get(`https://127.0.0.1:8000/api/cubes`);
-            
-                if (response.status !== 200) {
-                    throw new Error(`Erreur lors du chargement des cubes. Statut : ${response.status}`);
+      const loadHistoriqueCubesFromDatabase = async () => {
+        try {
+          const selectedCubeName = new URLSearchParams(window.location.search).get('name');
+          
+          if (selectedCubeName) {
+            // Récupérer les données des cubes depuis l'API
+            const response = await axios.get(`http://127.0.0.1:8000/api/cubes`);
+      
+            if (response.status !== 200) {
+              throw new Error(`Erreur lors du chargement des cubes. Statut : ${response.status}`);
+            }
+      
+            const cubesData = response.data['hydra:member'];
+            console.log('Cubes Data:', cubesData);
+      
+            if (!Array.isArray(cubesData)) {
+              throw new Error('cubesData n\'est pas un tableau');
+            }
+      
+            // Charger l'historique actuel depuis le localStorage
+            console.log('Avant le chargement initial - localStorage:', localStorage.getItem('historiqueCubes'));
+            const historiqueCubes = JSON.parse(localStorage.getItem('historiqueCubes') || '[]') || [];
+            console.log('historiqueCubes au chargement :', historiqueCubes);
+      
+      
+            // Rechercher le cube spécifique en fonction du nom dans l'URL
+            const selectedCubeInfo = cubesData.find(cubeInfo => cubeInfo.name === selectedCubeName);
+      
+            if (selectedCubeInfo) {
+              selectedCubeInfo.cubeData.forEach((cubeData:any) => {
+                // Récupérer la valeur de "s"
+                const sValue = cubeData.s;
+                console.log('Value of "s":', sValue);
+      
+                // Si la valeur de "s" existe et est un nombre, appelez handleOptionClick avec la valeur de "s"
+                if (typeof sValue === 'number') {
+                  handleOptionClick(sValue); // Assurez-vous que cette fonction ferme le pop-up
                 }
-            
-                const cubesData = response.data['hydra:member'];
-                console.log('Cubes Data:', cubesData);
-            
-                if (!Array.isArray(cubesData)) {
-                    throw new Error('cubesData n\'est pas un tableau');
-                }
-
-                
-            
-                const historiqueCubes = JSON.parse(localStorage.getItem('historiqueCubes') || '[]') || [];            
-                console.log('historiqueCubes au chargement :', historiqueCubes);
-
-                  cubesData.forEach(cubeInfo => {
-                    console.log('Cube Data from API:', cubeInfo.cubeData);
-
-                    // Récupérer la valeur de "s"
-                    const sValue = cubeInfo.cubeData[0]?.s;
-                    console.log('Value of "s":', sValue);
-
-                    // Si la valeur de "s" existe et est un nombre, appelez handleOptionClick avec la valeur de "s"
-                    if (typeof sValue === 'number') {
-                        handleOptionClick(sValue); // Assurez-vous que cette fonction ferme le pop-up
-                    }
-
-                     // Vérifier si les coordonnées du cube existent déjà dans historiqueCubes
-                    const coordAlreadyExists = historiqueCubes.some((coord:any) => (
-                      coord.x === cubeInfo.cubeData[0]?.position.x &&
-                      coord.y === cubeInfo.cubeData[0]?.position.y &&
-                      coord.z === cubeInfo.cubeData[0]?.position.z &&
-                      coord.s === sValue
-                    ));
-
-                    if (!coordAlreadyExists) {
-                      historiqueCubes.push({
-                        x: cubeInfo.cubeData[0]?.position.x,
-                        y: cubeInfo.cubeData[0]?.position.y,
-                        z: cubeInfo.cubeData[0]?.position.z,
-                        s: sValue
-                      });
-                      console.log('Ajout de coordonnée à historiqueCubes :', {
-                        x: cubeInfo.cubeData[0]?.position.x,
-                        y: cubeInfo.cubeData[0]?.position.y,
-                        z: cubeInfo.cubeData[0]?.position.z,
-                        s: sValue
-                      });
-                    }
-
+      
+                // Vérifier si les coordonnées du cube existent déjà dans historiqueCubes (en ignorant la taille `s`)
+                const coordAlreadyExists = historiqueCubes.some((coord:any) => (
+                  coord.x === cubeData.position.x &&
+                  coord.y === cubeData.position.y &&
+                  coord.z === cubeData.position.z
+                ));
+      
+                if (!coordAlreadyExists) {
+                  // Ajouter les coordonnées du cube à l'historique
+                  historiqueCubes.push({
+                    x: cubeData.position.x,
+                    y: cubeData.position.y,
+                    z: cubeData.position.z,
+                    s: sValue
                   });
-
+      
+                  // Afficher `historiqueCubes` après chaque ajout
+                  console.log('Après ajout de coordonnée - historiqueCubes :', historiqueCubes);
+      
+                  // Stocker à nouveau les données dans le localStorage
                   localStorage.setItem('historiqueCubes', JSON.stringify(historiqueCubes));
-                  createNewCube();
-                  console.log('Contenu de historiqueCubes :', historiqueCubes);
-        
+                }
+              });
             } else {
-                console.log("Aucun nom de cube dans l'URL. Création d'un nouveau cube");
-                createNewCube();
+              console.log('Aucune donnée trouvée pour le cube spécifié dans l\'URL');
             }
-            } catch (error) {
-                console.error('Erreur lors du chargement des cubes depuis la base de données :', error);
-            }
-          };
+      
+            // Créer un nouveau cube si nécessaire
+            createNewCube();
+      
+            // Afficher le contenu de l'historique après traitement
+            console.log('Contenu de historiqueCubes :', historiqueCubes);
+      
+          } else {
+            console.log("Aucun nom de cube dans l'URL. Création d'un nouveau cube");
+            createNewCube();
+          }
+        } catch (error) {
+          console.error('Erreur lors du chargement des cubes depuis la base de données :', error);
+        }
+      };
 
       
            
@@ -333,7 +341,7 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
         // Fonction pour enregistrer dans l'historique des cubes
         const saveToHistoriqueCubes = function () {
           const historiqueCubesData: { position: THREE.Vector3, s: number }[] = [];
-
+        
           deletedCubes.forEach(cube => {
             const cubeInfo = {
               position: cube.position.clone(),
@@ -341,19 +349,28 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
             };
             historiqueCubesData.push(cubeInfo);
           });
-
+        
           // Récupérer les données existantes dans le stockage local
           const existingDataString = localStorage.getItem('historiqueCubes');
           const existingData = existingDataString ? JSON.parse(existingDataString) : [];
-
-          // Fusionner les données existantes avec les nouvelles données
-          const combinedData = [...existingData, ...historiqueCubesData];
-
+        
+          // Filtrer les nouvelles données pour éviter les doublons
+          const uniqueHistoriqueCubesData = historiqueCubesData.filter(newCube => {
+            return !existingData.some((existingCube:any) => {
+              return (
+                newCube.position.equals(existingCube.position) &&
+                newCube.s === existingCube.s
+              );
+            });
+          });
+        
+          // Fusionner les données existantes avec les nouvelles données uniques
+          const combinedData = [...existingData, ...uniqueHistoriqueCubesData];
+        
           // Enregistrer le résultat dans le stockage local
           const jsonString = JSON.stringify(combinedData);
           localStorage.setItem('historiqueCubes', jsonString);
-
-        }
+        };
 
         const removeSingleCube = function (index: number) {
           if (index < cubes.length) {

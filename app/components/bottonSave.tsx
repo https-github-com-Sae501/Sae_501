@@ -89,28 +89,24 @@ const Popup: React.FC = () => {
         const existingData = jsonString ? JSON.parse(jsonString) : [];
         const historiqueCubes = JSON.parse(localStorage.getItem('historiqueCubes') || '[]');
 
-        // Fusionner les données sans doublons
-        const mergedDataWithoutDuplicates = [
-          ...existingData,
-          ...historiqueCubes.filter((newCube: Cube) =>
-            !existingData.some((existingCube: Cube) =>
-              existingCube.position.x === newCube.position.x &&
-              existingCube.position.y === newCube.position.y &&
-              existingCube.position.z === newCube.position.z &&
-              existingCube.s === newCube.s
-            )
-          )
-        ];
-        // Afficher les données du cube à envoyer
-        console.log('Données du cube à envoyer:', {
-            cubeData: mergedDataWithoutDuplicates,
-            name: localStorageName,
-            user: decodedToken.id,
-        });
+       // Fusionner les données sans doublons
+const mergedDataWithoutDuplicates = [
+  ...existingData,
+  ...historiqueCubes.filter((newCube: Cube) =>
+    !existingData.some((existingCube: Cube) => areCubesEqual(existingCube, newCube))
+  )
+];
+
+// Afficher les données du cube à envoyer
+console.log('Données du cube à envoyer:', {
+  cubeData: mergedDataWithoutDuplicates,
+  name: localStorageName,
+  user: decodedToken.id,
+});
 
         // Envoyer les données au serveur
         const response = await Axios.post(
-            'https://127.0.0.1:8000/api/cubes',
+            'http://127.0.0.1:8000/api/cubes',
             {
                 cubeData: mergedDataWithoutDuplicates,
                 name: localStorageName,

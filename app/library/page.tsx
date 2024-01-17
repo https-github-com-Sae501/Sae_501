@@ -29,7 +29,8 @@ const LibraryPage = () => {
 
   const getFullCubeData = async (cubeId: number) => {
     try {
-      const response = await Axios.get(`https://127.0.0.1:8000/api/cubes/${cubeId}`);
+      localStorage.removeItem('historiqueCubes');
+      const response = await Axios.get(`http://127.0.0.1:8000/api/cubes/${cubeId}`);
       const fullCubeData = response.data;
       console.log('Full Cube Data:', fullCubeData);
       // Utilisez les données complètes du cube comme nécessaire
@@ -56,7 +57,7 @@ const LibraryPage = () => {
     
         // Si l'ID de l'utilisateur est disponible, récupérez les cubes
         if (userIdFromToken) {
-          const response = await Axios.get('https://127.0.0.1:8000/api/cubes');
+          const response = await Axios.get('http://127.0.0.1:8000/api/cubes');
           console.log('Réponse de la requête API:', response.data);
     
           const allCubes = response.data['hydra:member'];
