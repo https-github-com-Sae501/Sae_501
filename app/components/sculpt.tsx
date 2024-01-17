@@ -5,9 +5,6 @@ import { useSearchParams } from 'next/navigation';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import axios from 'axios';
 
-interface CubeInfo {
-  cellSize: number;
-}
 interface SculptProps {
   toolSize?: number;
 }
@@ -15,7 +12,6 @@ interface SculptProps {
 
 
 const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
-  // const containerRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState<number>(0);
   const [showOptions, setShowOptions] = useState(true);
   const [isOptionsOpen, setIsOptionsOpen] = useState(true);
@@ -70,9 +66,9 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
         const far = 1000;
         const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
         console.log('Avant de définir la position de la caméra :', camera.position);
+        console.log(cellSize)
         camera.position.set(-cellSize * 0.8, cellSize * 1.3, -cellSize * 0.8);
         console.log('Après avoir défini la position de la caméra :', camera.position);
-        camera.lookAt(0, 0, 0);
         const controls = new OrbitControls(camera, canvas);
         controls.target.set(cellSize / 2, cellSize / 3, cellSize / 2);
         controls.mouseButtons = {
@@ -101,148 +97,81 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
         const cell = new Uint8Array(cellSize * cellSize * cellSize);
         const geometry = new THREE.BoxGeometry(1, 1, 1);
         const material = new THREE.MeshPhongMaterial({ color: 'gray' });
-        const cubes: THREE.Mesh[] = [];
+        let cubes: THREE.Mesh[] = [];
         const deletedCubes: THREE.Mesh[] = [];
 
+        const areCoordsEqual = (coord1: any, coord2: any) => {
+          const equal = coord1.x === coord2.x && coord1.y === coord2.y && coord1.z === coord2.z;
+          console.log(`Comparaison des coordonnées (${coord1.x}, ${coord1.y}, ${coord1.z}) et (${coord2.x}, ${coord2.y}, ${coord2.z}) : ${equal}`);
+          return equal;
+        };
         
-       
-
-        //------------- Ouvrir Sculpture --------------------------
-
-        const loadHistoriqueCubesFromDatabase = async () => {
-
-          
-
-          try {
-            
-            // Récupérer le nom du cube que vous avez sélectionné depuis l'URL
-            const selectedCubeName = new URLSearchParams(window.location.search).get('name');
+        const isObjectWithCoords = (coord: any) => {
+          return (
+            typeof coord === 'object' &&
+            coord !== null &&
+            'x' in coord &&
+            'y' in coord &&
+            'z' in coord &&
+            typeof coord.x === 'number' &&
+            typeof coord.y === 'number' &&
+            typeof coord.z === 'number'
+          );
+        };
         
-            // Si un nom est présent dans l'URL, récupérer les cubes existants
-            if (selectedCubeName) {
-              const response = await axios.get(`https://127.0.0.1:8000/api/cubes`);
-        
-              if (response.status !== 200) {
-                throw new Error(`Erreur lors du chargement des cubes. Statut : ${response.status}`);
-              }
-        
-              const cubesData = response.data['hydra:member'];
-              console.log('Cubes Data:', cubesData);
-        
-              if (!Array.isArray(cubesData)) {
-                throw new Error('cubesData n\'est pas un tableau');
-              }
-        
-              // Vous devrez adapter cette partie en fonction de la structure réelle de vos données
-              const combinedHistoriqueCubes = cubesData;
-        
-              const tailles = combinedHistoriqueCubes.length > 0 ? combinedHistoriqueCubes[0].s : null;
-              setCellSize(tailles);
-              setShowOptions(false);
-        
-              // Nettoyer la scène des cubes existants
-              cubes.forEach(cube => scene.remove(cube));
-              cubes.length = 0;
-        
-              // Filtrer les cubes en fonction du nom sélectionné
-              const selectedCubesData = combinedHistoriqueCubes.filter(cubeInfo => cubeInfo.name === selectedCubeName);
-        
-              console.log('Selected Cubes Data:', selectedCubesData);
-        
-              if (!Array.isArray(selectedCubesData) || selectedCubesData.length === 0) {
-                console.error(`Aucun cube trouvé avec le nom "${selectedCubeName}"`);
-        
-                // Si aucun cube n'est trouvé avec le nom, créer un nouveau cube avec le raycaster
-                createNewCube();
-                return;
-              }
-        
-              // Utiliser uniquement le premier cube trouvé (vous pouvez ajuster cela selon vos besoins)
-              const selectedCubeData = selectedCubesData[0];
-        
-              // Vous pouvez maintenant utiliser selectedCubeData dans la suite de votre logique
-              console.log('Selected Cube Data:', selectedCubeData);
-        
-              selectedCubeData.cubeData.forEach(async (positionData: any) => {
-                try {
-                    if (positionData && positionData.position !== undefined) {
-                        const { x, y, z } = positionData.position;
-                        const { s } = positionData;
-
-                        if (x !== undefined && y !== undefined && z !== undefined) {
-                            console.log('Valeurs récupérées de la base de données :', { x, y, z, s });
-
-                            const historiqueCubes = JSON.parse(localStorage.getItem('historiqueCubes') || '[]');
-                            const coordAlreadyExists = historiqueCubes.some((coord: any) => (
-                                coord.x === x && coord.y === y && coord.z === z && coord.s === s
-                            ));
-
-                            if (!coordAlreadyExists) {
-                                historiqueCubes.push({ x, y, z, s });
-                                localStorage.setItem('historiqueCubes', JSON.stringify(historiqueCubes));
-
-                                // Créez le cube constitué de petits cubes
-                                await createNewCube();
-
-                                console.log('Après la création du cube - Position de la caméra :', camera.position);
-                            } else {
-                                console.log('Coordonnées déjà présentes dans l\'historique. Aucune action requise.');
-                            }
-                        } else {
-                            console.error('Erreur lors de la création du cube: Les coordonnées (x, y, z) ne sont pas définies correctement.');
-                        }
-                    } else {
-                        console.error('Erreur lors de la création du cube: La propriété positionData.position est indéfinie.');
-                    }
-                } catch (error) {
-                    console.error('Erreur lors de la création du cube:', error);
-                }
-            });
-        } else {
-            // Aucun nom de cube dans l'URL, créer un nouveau cube
-            await createNewCube();
-        }
-    } catch (error) {
-        console.error('Erreur lors du chargement des cubes depuis la base de données :', error);
-    }
-};
-
-    
         
         const createNewCube = () => {
           try {
-
+            console.log('Création d\'un nouveau cube...');
+        
+            // Filtrer les éléments invalides de historiqueCubes
+            const validCoords = historiqueCubes.filter((coord) =>
+              isObjectWithCoords(coord)
+            );
+        
+            console.log('Contenu de historiqueCubes après le filtrage :', validCoords);
+        
+            // Remplir la cellule de cubes
             for (let y = 0; y < cellSize; ++y) {
               for (let z = 0; z < cellSize; ++z) {
                 for (let x = 0; x < cellSize; ++x) {
                   const offset = y * cellSize * cellSize + z * cellSize + x;
                   cell[offset] = 1;
-                }
-              }
-            }
-    
-            for (let y = 0; y < cellSize; ++y) {
-              for (let z = 0; z < cellSize; ++z) {
-                for (let x = 0; x < cellSize; ++x) {
-                  const offset = y * cellSize * cellSize + z * cellSize + x;
-                  const block = cell[offset];
-                  if (block) {
+        
+                  // Vérifier si les coordonnées existent dans historiqueCubes (après le filtrage)
+                  const isCubeInHistory = validCoords.some((coord) => {
+                    if (isObjectWithCoords(coord)) {
+                      console.log('Coord dans historiqueCubes :', coord);
+                      return areCoordsEqual(coord, { x, y, z });
+                    }
+                    console.log('Coord invalides dans historiqueCubes :', coord);
+                    return false;
+                  });
+
+                  // Créer un cube uniquement s'il n'est pas dans historiqueCubes
+                  if (cell[offset] && !isCubeInHistory) {
+                    console.log(`Vérification avant création - Coords: (${x}, ${y}, ${z}), Historique: ${JSON.stringify(validCoords)}`);
                     const mesh = new THREE.Mesh(geometry, material);
                     mesh.position.set(x, y, z);
                     scene.add(mesh);
                     cubes.push(mesh);
+
+                    console.log(`Cube at (${x}, ${y}, ${z}) créé`);
+
+                    
                   }
                 }
               }
             }
-
+        
+            console.log('Cubes created:', cubes);
             console.log('Position de la caméra :', camera.position);
 
 
             const raycaster = new THREE.Raycaster();
             const mouse = new THREE.Vector2();
 
-             //------------- Fonction au click --------------------------
+            //------------- Fonction au click --------------------------
 
         const onMouseClick: EventListener = function (event: Event) {
           const mouseEvent = event as MouseEvent; // Convertir l'événement en MouseEvent
@@ -313,12 +242,88 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
         } else {
           console.error("L'élément avec l'ID 'undoButton' n'a pas été trouvé dans le document.");
         }
-        const historiqueCubes = [];
-            console.log('Création d\'un cube...');
+    
           } catch (error) {
             console.error('Erreur lors de la création du nouveau cube :', error);
           }
       };
+
+        const loadHistoriqueCubesFromDatabase = async () => {
+
+          try {
+            const selectedCubeName = new URLSearchParams(window.location.search).get('name');
+            
+            if (selectedCubeName) {
+                const response = await axios.get(`https://127.0.0.1:8000/api/cubes`);
+            
+                if (response.status !== 200) {
+                    throw new Error(`Erreur lors du chargement des cubes. Statut : ${response.status}`);
+                }
+            
+                const cubesData = response.data['hydra:member'];
+                console.log('Cubes Data:', cubesData);
+            
+                if (!Array.isArray(cubesData)) {
+                    throw new Error('cubesData n\'est pas un tableau');
+                }
+
+                
+            
+                const historiqueCubes = JSON.parse(localStorage.getItem('historiqueCubes') || '[]') || [];            
+                console.log('historiqueCubes au chargement :', historiqueCubes);
+
+                  cubesData.forEach(cubeInfo => {
+                    console.log('Cube Data from API:', cubeInfo.cubeData);
+
+                    // Récupérer la valeur de "s"
+                    const sValue = cubeInfo.cubeData[0]?.s;
+                    console.log('Value of "s":', sValue);
+
+                    // Si la valeur de "s" existe et est un nombre, appelez handleOptionClick avec la valeur de "s"
+                    if (typeof sValue === 'number') {
+                        handleOptionClick(sValue); // Assurez-vous que cette fonction ferme le pop-up
+                    }
+
+                     // Vérifier si les coordonnées du cube existent déjà dans historiqueCubes
+                    const coordAlreadyExists = historiqueCubes.some((coord:any) => (
+                      coord.x === cubeInfo.cubeData[0]?.position.x &&
+                      coord.y === cubeInfo.cubeData[0]?.position.y &&
+                      coord.z === cubeInfo.cubeData[0]?.position.z &&
+                      coord.s === sValue
+                    ));
+
+                    if (!coordAlreadyExists) {
+                      historiqueCubes.push({
+                        x: cubeInfo.cubeData[0]?.position.x,
+                        y: cubeInfo.cubeData[0]?.position.y,
+                        z: cubeInfo.cubeData[0]?.position.z,
+                        s: sValue
+                      });
+                      console.log('Ajout de coordonnée à historiqueCubes :', {
+                        x: cubeInfo.cubeData[0]?.position.x,
+                        y: cubeInfo.cubeData[0]?.position.y,
+                        z: cubeInfo.cubeData[0]?.position.z,
+                        s: sValue
+                      });
+                    }
+
+                  });
+
+                  localStorage.setItem('historiqueCubes', JSON.stringify(historiqueCubes));
+                  createNewCube();
+                  console.log('Contenu de historiqueCubes :', historiqueCubes);
+        
+            } else {
+                console.log("Aucun nom de cube dans l'URL. Création d'un nouveau cube");
+                createNewCube();
+            }
+            } catch (error) {
+                console.error('Erreur lors du chargement des cubes depuis la base de données :', error);
+            }
+          };
+
+      
+           
         
         // Appeler la fonction pour charger les cubes depuis la base de données
         loadHistoriqueCubesFromDatabase();
