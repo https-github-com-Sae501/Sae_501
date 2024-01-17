@@ -27,10 +27,42 @@ const LibraryPage = () => {
     return parseInt(segments[segments.length - 1], 10);
   };
 
+  const handleFilter = async (filter: string) => {
+    try {
+      let filteredCubes: Cube[] = [];
+
+      // Si l'utilisateur est connecté, filtre les cubes en fonction du filtre sélectionné
+      if (loggedInUserId) {
+        const response = await Axios.get('http://127.0.0.1:8000/api/cubes');
+        const allCubes = response.data['hydra:member'];
+
+        switch (filter) {
+          case 'my-sculptures':
+            // Filtrer les cubes de l'utilisateur connecté
+            filteredCubes = allCubes.filter((cube: Cube) => getUserIdFromUrl(cube.user) === loggedInUserId);
+            break;
+
+          case 'all-sculptures':
+            // Afficher toutes les sculptures
+            filteredCubes = allCubes;
+            break;
+
+          default:
+            break;
+        }
+      }
+
+      // Mettre à jour l'état avec les cubes filtrés
+      setCubes(filteredCubes);
+    } catch (error) {
+      console.error('Error handling filter:', error);
+    }
+  };
+
   const getFullCubeData = async (cubeId: number) => {
     try {
       localStorage.removeItem('historiqueCubes');
-      const response = await Axios.get(`https://mmi21-01.mmi-limoges.fr/api/cubes/${cubeId}`);
+      const response = await Axios.get(`http://127.0.0.1:8000/api/cubes/${cubeId}`);
       const fullCubeData = response.data;
       console.log('Full Cube Data:', fullCubeData);
       // Utilisez les données complètes du cube comme nécessaire
@@ -87,8 +119,22 @@ const LibraryPage = () => {
       <Header />
       <h1 className="text-white text-4xl font-bold p-4 pt-12">Library</h1>
   
+      <div className="flex items-start justify-start mt-5 p-4">
+        <div className="flex space-x-4 mb-4">
+          {/* Button for "My Sculptures" */}
+          <button className="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded" onClick={() => handleFilter("my-sculptures")}>
+            My Sculptures
+          </button>
+  
+          {/* Button for "All Sculptures" */}
+          <button className="bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-4 rounded" onClick={() => handleFilter("all-sculptures")}>
+            All Sculptures
+          </button>
+        </div>
+      </div>
+  
       <div className="flex-grow flex items-center justify-center">
-        <ul className=' flex justify-center items-center px-8 place-items-center grid-cols-6 max-w-screen max-h-full gap-3'>
+        <ul className='flex justify-center items-center px-8 place-items-center grid-cols-6 max-w-screen max-h-full gap-3'>
           {Array.isArray(cubes) && cubes.length > 0 ? (
             cubes.map((cube, index) => (
               <li className='text-white' key={index} onClick={() => getFullCubeData(cube.id)}>
@@ -109,7 +155,7 @@ const LibraryPage = () => {
       </div>
   
       <div className='fixed bottom-4 right-4 mb-10'>
-        <Link href='./sculpt'><BottonCreate ></BottonCreate></Link>
+        <Link href='./sculpt'><BottonCreate /></Link>
       </div>
   
       <Footer />
