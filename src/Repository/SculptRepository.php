@@ -2,23 +2,23 @@
 
 namespace App\Repository;
 
-use App\Entity\Cube;
+use App\Entity\Sculpt;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Cube>
+ * @extends ServiceEntityRepository<Sculpt>
  *
- * @method Cube|null find($id, $lockMode = null, $lockVersion = null)
- * @method Cube|null findOneBy(array $criteria, array $orderBy = null)
- * @method Cube[]    findAll()
- * @method Cube[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Sculpt|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Sculpt|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Sculpt[]    findAll()
+ * @method Sculpt[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CubeRepository extends ServiceEntityRepository
+class SculptRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Cube::class);
+        parent::__construct($registry, Sculpt::class);
     }
 
 //    /**

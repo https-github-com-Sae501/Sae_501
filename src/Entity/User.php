@@ -158,7 +158,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Cube>
+     * @return Collection<int, Sculpt>
      */
     public function getSculpts(): Collection
     {

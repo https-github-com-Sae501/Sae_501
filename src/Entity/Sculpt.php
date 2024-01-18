@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\CubeRepository;
+use App\Repository\SculptRepository;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 
 
 
-#[ORM\Entity(repositoryClass: CubeRepository::class)]
+#[ORM\Entity(repositoryClass: SculptRepository::class)]
 #[ApiResource]
 class Sculpt
 {
