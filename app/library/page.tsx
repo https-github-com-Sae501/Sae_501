@@ -33,7 +33,7 @@ const LibraryPage = () => {
 
       // Si l'utilisateur est connecté, filtre les cubes en fonction du filtre sélectionné
       if (loggedInUserId) {
-        const response = await Axios.get('https://127.0.0.1:8000/api/cubes');
+        const response = await Axios.get('https://mmi21-01.mmi-limoges.fr/api/sculpts');
         const allCubes = response.data['hydra:member'];
 
         switch (filter) {
@@ -133,8 +133,8 @@ const LibraryPage = () => {
         </div>
       </div>
   
-      <div className="flex-grow flex items-center justify-center">
-        <ul className='flex justify-center items-center px-8 place-items-center grid-cols-6 max-w-screen max-h-full gap-3'>
+      <div className="flex flex-grow  items-start justify-center">
+        <ul className='flex justify-center items-center place-items-center px-8 grid sm:grid-cols-5 lg:grid-cols-6 grid-cols-3 max-w-screen max-h-full gap-3'>
           {Array.isArray(cubes) && cubes.length > 0 ? (
             cubes.map((cube, index) => (
               <li className='text-white' key={index} onClick={() => getFullCubeData(cube.id)}>

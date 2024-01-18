@@ -169,9 +169,9 @@ console.log('Données du cube à envoyer:', {
             </div>
             
             <div className="mt-4 space-x-2 flex justify-end">
-                    <a href='/library' onClick={handleSave} className="bg-gray-800 text-white px-3 py-1 rounded cursor-pointer w-1/3 flex justify-center">
-                    Save
-                    </a>
+                    <Link href="./library" onClick={handleSave} className="bg-gray-800 text-white px-3 py-1 rounded cursor-pointer w-1/3 flex justify-center">
+                      Save
+                    </Link>
               <a onClick={closePopup} className="bg-gray-500 text-white px-3 py-1 rounded cursor-pointer w-1/3 flex justify-center">
                 Cancelled
               </a>
