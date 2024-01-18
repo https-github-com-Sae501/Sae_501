@@ -10,7 +10,7 @@ use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity(repositoryClass: CubeRepository::class)]
 #[ApiResource]
-class Cube
+class Sculpt
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

@@ -60,12 +60,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Cube::class)]
-    private Collection $cubes;
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Sculpt::class)]
+    private Collection $sculpts;
 
     public function __construct()
     {
-        $this->cubes = new ArrayCollection();
+        $this->sculpts = new ArrayCollection();
         $this->roles = ['ROLE_USER'];
     }
 
@@ -160,27 +160,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Cube>
      */
-    public function getCubes(): Collection
+    public function getSculpts(): Collection
     {
-        return $this->cubes;
+        return $this->sculpts;
     }
 
-    public function addCube(Cube $cube): static
+    public function addSculpt(Sculpt $sculpt): static
     {
-        if (!$this->cubes->contains($cube)) {
-            $this->cubes->add($cube);
-            $cube->setUser($this);
+        if (!$this->sculpts->contains($sculpt)) {
+            $this->sculpts->add($sculpt);
+            $sculpt->setUser($this);
         }
 
         return $this;
     }
 
-    public function removeCube(Cube $cube): static
+    public function removeSculpt(Sculpt $sculpt): static
     {
-        if ($this->cubes->removeElement($cube)) {
+        if ($this->sculpts->removeElement($sculpt)) {
             // set the owning side to null (unless already changed)
-            if ($cube->getUser() === $this) {
-                $cube->setUser(null);
+            if ($sculpt->getUser() === $this) {
+                $sculpt->setUser(null);
             }
         }
 
