@@ -1,0 +1,11 @@
+a6889e,127.0.0.1,GET,http://127.0.0.1:8000/,1705578742,,404,request
+4df22b,127.0.0.1,GET,http://127.0.0.1:8000/api,1705578747,,200,request
+12fd85,127.0.0.1,GET,http://127.0.0.1:8000/favicon.ico,1705578748,7dad53,404,request
+7dad53,127.0.0.1,GET,http://127.0.0.1:8000/favicon.ico,1705578748,,404,request
+7feddd,127.0.0.1,GET,http://127.0.0.1:8000/api/sculpts?page=1,1705578751,4eb763,500,request
+4eb763,127.0.0.1,GET,http://127.0.0.1:8000/api/sculpts?page=1,1705578751,,500,request
+0dde2e,127.0.0.1,GET,http://127.0.0.1:8000/api,1705579059,,200,request
+424187,127.0.0.1,GET,http://127.0.0.1:8000/api/sculpts?page=1,1705579063,3be8b0,500,request
+3be8b0,127.0.0.1,GET,http://127.0.0.1:8000/api/sculpts?page=1,1705579063,,500,request
+fa1b29,127.0.0.1,GET,http://127.0.0.1:8000/api,1705579128,,200,request
+e72621,127.0.0.1,GET,http://127.0.0.1:8000/api/sculpts?page=1,1705579131,,200,request

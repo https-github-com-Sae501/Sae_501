@@ -13,7 +13,7 @@ const Formulaire: React.FC = () => {
 
   const [loginData, setLoginData] = useState({
     email: '',
-    password: '', 
+    password: '',
   });
 
   const [registrationResponse, setRegistrationResponse] = useState<string | null>(null);
@@ -21,10 +21,10 @@ const Formulaire: React.FC = () => {
 
   useEffect(() => {
     const authToken = localStorage.getItem('authToken');
-    
+
     if (authToken) {
       console.log('L\'utilisateur est déjà connecté.');
-       window.location.href = '/';
+      window.location.href = '/';
     }
   }, []);
 
@@ -38,7 +38,7 @@ const Formulaire: React.FC = () => {
 
     try {
       const response = await Axios.post(
-        'http://127.0.0.1:8000/api/users',
+        'https://mmi21-01.mmi-limoges.fr/api/users',
         registrationData,
         {
           headers: {
@@ -64,7 +64,7 @@ const Formulaire: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await Axios.post('http://127.0.0.1:8000/authentication_token', loginData);
+      const response = await Axios.post('https://mmi21-01.mmi-limoges.fr/authentication_token', loginData);
       const token = response.data.token;
 
       localStorage.setItem('authToken', token);
@@ -94,77 +94,80 @@ const Formulaire: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="h-screen text-white">
       <Header />
-      <div className="flex justify-center items-center min-h-screen bg-gray-100 gap-10 ">
-        <form onSubmit={handleLoginSubmit} className=" overflow-y-auto p-8 w-1/2 max-w-xl ">
-          <h1 className="text-3xl mb-4 flex flex-row gap-2 text-black" >ALREADY <p className='font-bold text-black'>REGISTERED</p> ?</h1>
-          <h2 className="text-xl mb-4 text-black">Connect now !</h2>
-          <div className="mb-6">
-            <label className="block font-bold text-black">Mail:</label>
-            <input
-              type="email"
-              name="email"
-              value={loginData.email}
-              onChange={handleLoginInputChange}
-              className="w-full p-3 border border-gray-300 rounded text-black"
-            />
-          </div>
-          <div className="mb-6">
-            <label className="block font-bold text-black">Password:</label>
-            <input
-              type="password"
-              name="password"
-              value={loginData.password}
-              onChange={handleLoginInputChange}
-              className="w-full p-3 border border-gray-300 rounded text-black"
-            />
-          </div>
-          <button type="submit" className=" w-full bg-black text-white p-3 rounded text-xl cursor-pointer transition duration-300 hover:bg-gray-700">
-            Connect
-          </button>
-          {loginResponse && <p className="text-green-500 mt-4">{loginResponse}</p>}
-        </form>
-        <div className="w-px bg-gray-700 h-96"></div>
-        <form onSubmit={handleRegistrationSubmit} className=" w-1/2 p-8  max-w-xl">
-          <h1 className="text-3xl mb-4 text-black flex  flex-row gap-2"> <p className='font-bold text-black'>FIRST</p> VISIT ?</h1>
-          <h2 className="text-xl mb-4 text-black">Register now !</h2>
-          <div className="mb-6">
-            <label className="block font-bold text-black">Mail:</label>
-            <input
-              type="email"
-              name="email"
-              value={registrationData.email}
-              onChange={handleInputChange}
-              className="w-full p-3 border border-gray-300 rounded text-black"
-            />
-          </div>
-          <div className="mb-6">
-            <label className="block font-bold text-black">Password:</label>
-            <input
-              type="password"
-              name="plainPassword"
-              value={registrationData.plainPassword}
-              onChange={handleInputChange}
-              className="w-full p-3 border border-gray-300 rounded text-black"
-            />
-          </div>
-          <div className="mb-6">
-            <label className="block font-bold text-black">Confirm Password:</label>
-            <input
-              type="password"
-              name="confirmPassword"
-              value={registrationData.confirmPassword}
-              onChange={handleInputChange}
-              className="w-full p-3 border border-gray-300 rounded text-black"
-            />
-          </div>
-          <button type="submit" className="w-full bg-black text-white p-3 rounded text-xl cursor-pointer transition duration-300 hover:bg-gray-700">
-            Register
-          </button>
-          {registrationResponse && <p className="text-green-500 mt-4">{registrationResponse}</p>}
-        </form>
+      <div className='h-full overflow-x-scroll'>
+        <div className='flex flex-col md:flex-row justify-center items-center min-h-screen bg-zinc-900 gap-10 w-full pt-2'>
+          <form onSubmit={handleLoginSubmit} className=" p-8 md:w-1/2 max-w-xl w-full">
+            <h1 className="text-3xl mb-4 flex flex-row gap-2 text-white" >ALREADY <p className='font-bold text-white'>REGISTERED</p> ?</h1>
+            <h2 className="text-xl mb-4 text-white">Connect now !</h2>
+            <div className="mb-6">
+              <label className="block font-bold text-white">Mail:</label>
+              <input
+                type="email"
+                name="email"
+                value={loginData.email}
+                onChange={handleLoginInputChange}
+                className="w-full p-3 border border-gray-300 rounded text-black"
+              />
+            </div>
+            <div className="mb-6">
+              <label className="block font-bold text-white">Password:</label>
+              <input
+                type="password"
+                name="password"
+                value={loginData.password}
+                onChange={handleLoginInputChange}
+                className="w-full p-3 border border-gray-300 rounded text-black"
+              />
+            </div>
+            <button type="submit" className=" w-full bg-black text-white p-3 rounded text-xl cursor-pointer transition duration-300 hover:bg-gray-700">
+              Connect
+            </button>
+            {loginResponse && <p className="text-green-500 mt-4">{loginResponse}</p>}
+          </form>
+          <div className="hidden lg:block w-px bg-gray-300 h-96"></div>
+          <form onSubmit={handleRegistrationSubmit} className="p-8 md:w-1/2 max-w-xl w-full pb-20">
+            <h1 className="text-3xl mb-4 text-white flex  flex-row gap-2"> <p className='font-bold text-white'>FIRST</p> VISIT ?</h1>
+            <h2 className="text-xl mb-4 text-white">Register now !</h2>
+            <div className="mb-6">
+              <label className="block font-bold text-white">Mail:</label>
+              <input
+                type="email"
+                name="email"
+                value={registrationData.email}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded text-black"
+              />
+            </div>
+            <div className="mb-6">
+              <label className="block font-bold text-white">Password:</label>
+              <input
+                type="password"
+                name="plainPassword"
+                value={registrationData.plainPassword}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded text-black"
+              />
+            </div>
+            <div className="mb-6">
+              <label className="block font-bold text-white">Confirm Password:</label>
+              <input
+                type="password"
+                name="confirmPassword"
+                value={registrationData.confirmPassword}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded text-black"
+              />
+            </div>
+            <button type="submit" className="w-full bg-black text-white p-3 rounded text-xl cursor-pointer transition duration-300 hover:bg-gray-700">
+              Register
+            </button>
+            {registrationResponse && <p className="text-green-500 mt-4">{registrationResponse}</p>}
+          </form>
+        </div>
       </div>
+
       <Footer />
     </div>
 

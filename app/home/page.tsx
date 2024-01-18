@@ -29,8 +29,8 @@ const Home = () => {
       <h1 className='text-4xl font-bold p-2 pt-12 pb-6 text-white mb-20 text-center'>Sculpt</h1>
 
         <div className='pl-3 pb-3 text-xl text-white'>
-          <div className='flex flex-row justify-around items-center mb-20'>
-              <p className='w-1/2 p-2 text-center'>Before you do anything else, feel free to create an account and log in to find all your sculptures on any device. </p>
+          <div className='flex sm:flex-row flex-col justify-around items-center mb-20'>
+              <p className='sm:w-1/2 p-2 text-center'>Before you do anything else, feel free to create an account and log in to find all your sculptures on any device. </p>
               <div className='w-1/2 flex justify-center items-center'>
                   <div className="flex text-sm gap-4">
                   {authenticated ? (
@@ -48,16 +48,16 @@ const Home = () => {
 
           </div>
 
-          <div className='flex flex-row justify-around items-center mb-20 border'>
-            <p className='w-1/2 p-2 text-center'>Sculpt is a stone carving game. The principle is simple: you have 3 cube sizes to choose from, small, medium and large.</p>
+          <div className='flex sm:flex-row flex-col justify-around items-center mb-20 border'>
+            <p className='sm:w-1/2 p-2 text-center'>Sculpt is a stone carving game. The principle is simple: you have 3 cube sizes to choose from, small, medium and large.</p>
             <div className='flex justify-center p-4 w-1/2'>
               <Image src="/chooseSize.PNG" alt="chooseSize" width={1000} height={1000} className='' />
             </div>
           </div>
           
-          <div className='flex flex-row justify-around items-center mb-20'>
+          <div className='flex sm:flex-row flex-col justify-around items-center mb-20'>
             
-            <p className='max-w-5xl w-1/2 p-2 text-center'> You can then carve using various tools, such as the tungsten engraver, which breaks one cube, the steel engraver, which breaks two cubes, and the soft stone chisel, which breaks four cubes. There&apos;s also a rewind and restart button for starting a new sculpture.</p>
+            <p className='max-w-5xl sm:w-1/2 p-2 text-center'> You can then carve using various tools, such as the tungsten engraver, which breaks one cube, the steel engraver, which breaks two cubes, and the soft stone chisel, which breaks four cubes. There&apos;s also a rewind and restart button for starting a new sculpture.</p>
 
             <div className='flex sm:flex-row flex-col justify-center items-center gap-6 p-4 w-1/2 mb-20'>
               {/* <Outils handleClick={handleClick}></Outils> */}
@@ -84,20 +84,21 @@ const Home = () => {
             </div>
           </div>
           
-          <div className='flex flex-row justify-around items-center mb-20'>
-            <p className='w-1/2 p-2 text-center'> If it&apos;s not finished, you can come back and modify it in your library.
+          <div className='flex sm:flex-row flex-col justify-around items-center mb-20'>
+            <p className='sm:w-1/2 p-2 text-center'> If it&apos;s not finished, you can come back and modify it in your library.
             </p>
             <div className='flex justify-center p-4 w-1/2'>
               <Image src="/libraryPage.PNG" alt="chooseSize" width={1000} height={750} className='' />
             </div>
           </div>
           
-         <div className='border flex-col justify-center items-center w-auto'>
+         <div className='border flex-col justify-center items-center w-auto mb-20'>
               <h2 className='text-3xl font-bold p-2 pt-4 text-white text-center'>It&apos;s your turn to play</h2>
+              <h4 className='text-center'>Pc & Phone </h4>
 
-              <div className='flex items-center justify-center p-4'>
-            <Link href='./sculpt'><BottonCreate ></BottonCreate></Link>
-          </div>
+              <div className='flex items-center justify-center p-4 '>
+                <Link href='./sculpt'><BottonCreate ></BottonCreate></Link>
+              </div>
           
           </div>           
          

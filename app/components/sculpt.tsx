@@ -255,7 +255,7 @@ const Sculpt: React.FC<SculptProps> = ({ toolSize }) => {
           
           if (selectedCubeName) {
             // Récupérer les données des cubes depuis l'API
-            const response = await axios.get(`http://127.0.0.1:8000/api/cubes`);
+            const response = await axios.get(`https://mmi21-01.mmi-limoges.fr/api/sculpts`);
       
             if (response.status !== 200) {
               throw new Error(`Erreur lors du chargement des cubes. Statut : ${response.status}`);

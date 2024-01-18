@@ -106,7 +106,7 @@ console.log('Données du cube à envoyer:', {
 
         // Envoyer les données au serveur
         const response = await Axios.post(
-            'http://127.0.0.1:8000/api/cubes',
+            'https://mmi21-01.mmi-limoges.fr/api/sculpts',
             {
                 cubeData: mergedDataWithoutDuplicates,
                 name: localStorageName,
@@ -149,34 +149,30 @@ console.log('Données du cube à envoyer:', {
   };
 
   return (
-    <div>
+    <div className='text-black'>
       <button onClick={openPopup} className="fixed bottom-[3rem] right-4 bg-black text-white px-[2rem] py-2 rounded-md cursor-pointer">
         Save
       </button>
 
       {isPopupOpen && (
-        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-500 bg-opacity-75">
-          <div className="absolute w-1/3 p-4 rounded-lg shadow-lg bg-gray-400">
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-75">
+          <div className="absolute w-full lg:w-1/3 md:w-1/2 p-4 rounded-lg shadow-lg bg-black text-white">
             <div className='flex flex-row items-center justify-center gap-4'>
-              <h2 className="text-xl font-semibold text-black">Title</h2>
-              <input
-                type="text"
-                placeholder="Title"
-                className="text-black w-full p-2 border border-gray-300 rounded"
-                value={localStorageName}
-                onChange={handleNameChange}
-              />
+                <h2 className="text-xl font-semibold text-white">Title</h2>
+                <input
+                  type="text"
+                  placeholder="Title"
+                  className="w-full p-2 border border-gray-300 rounded text-black"
+                  value={localStorageName}
+                  onChange={handleNameChange}
+                />
             </div>
-
+            
             <div className="mt-4 space-x-2 flex justify-end">
-
-            <Link href="/">
-              <button onClick={handleSave} className="bg-black text-white px-3 py-1 rounded cursor-pointer">
-                Save
-              </button>
-            </Link>
-              
-              <a onClick={closePopup} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-pointer">
+                    <a href='/library' onClick={handleSave} className="bg-gray-800 text-white px-3 py-1 rounded cursor-pointer w-1/3 flex justify-center">
+                    Save
+                    </a>
+              <a onClick={closePopup} className="bg-gray-500 text-white px-3 py-1 rounded cursor-pointer w-1/3 flex justify-center">
                 Cancelled
               </a>
             </div>

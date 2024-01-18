@@ -33,7 +33,7 @@ const LibraryPage = () => {
 
       // Si l'utilisateur est connecté, filtre les cubes en fonction du filtre sélectionné
       if (loggedInUserId) {
-        const response = await Axios.get('http://127.0.0.1:8000/api/cubes');
+        const response = await Axios.get('https://127.0.0.1:8000/api/cubes');
         const allCubes = response.data['hydra:member'];
 
         switch (filter) {
@@ -62,7 +62,7 @@ const LibraryPage = () => {
   const getFullCubeData = async (cubeId: number) => {
     try {
       localStorage.removeItem('historiqueCubes');
-      const response = await Axios.get(`http://127.0.0.1:8000/api/cubes/${cubeId}`);
+      const response = await Axios.get(`https://mmi21-01.mmi-limoges.fr/api/sculpts/${cubeId}`);
       const fullCubeData = response.data;
       console.log('Full Cube Data:', fullCubeData);
       // Utilisez les données complètes du cube comme nécessaire
@@ -89,7 +89,7 @@ const LibraryPage = () => {
     
         // Si l'ID de l'utilisateur est disponible, récupérez les cubes
         if (userIdFromToken) {
-          const response = await Axios.get('http://127.0.0.1:8000/api/cubes');
+          const response = await Axios.get('https://mmi21-01.mmi-limoges.fr/api/sculpts');
           console.log('Réponse de la requête API:', response.data);
     
           const allCubes = response.data['hydra:member'];
